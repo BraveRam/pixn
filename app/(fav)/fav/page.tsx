@@ -28,7 +28,6 @@ export default function FavoritesPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      console.log(user);
 
       const { data: favorites, error } = await supabase
         .from("gallery")
