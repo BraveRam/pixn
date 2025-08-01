@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import MobileMenu from "./MobileMenu"; // <-- new client component
+import { Button } from "../ui/button";
+import MobileMenu from "./MobileMenu";
 
 const Navbar = async () => {
   const supabase = await createClient();
@@ -12,7 +12,7 @@ const Navbar = async () => {
   const fullName = user?.user_metadata?.full_name ?? "";
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
+    <nav className="bg-black/80 backdrop-blur-md text-white flex items-center justify-between px-6 py-4 border-b border-white/10 fixed top-0 left-0 right-0 z-50 shadow-md">
       <Link href="/">
         <h1 className="font-bold text-3xl">Pixn</h1>
       </Link>

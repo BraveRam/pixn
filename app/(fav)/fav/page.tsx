@@ -112,10 +112,10 @@ export default function FavoritesPage() {
           images.map((img) => (
             <div
               key={img.path}
-              className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden shadow-lg group bg-zinc-100"
+              className="relative w-full max-w-sm rounded-lg overflow-hidden shadow-lg group"
             >
               <img
-                src={img.signedUrl as string}
+                src={img.signedUrl}
                 alt={img.name || "Favorite Image"}
                 className="w-full h-full object-cover transition-transform group-hover:scale-105"
               />

@@ -2,7 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Github, MessageCircle } from "lucide-react";
+import {
+  BookCheck,
+  Github,
+  ImageUp,
+  LockKeyhole,
+  MessageCircle,
+  Sparkle,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -72,26 +79,28 @@ export default function LandingPage() {
         {[
           {
             title: "Upload Instantly",
-            icon: "⬆️",
+            icon: <ImageUp />,
             desc: "Drag, drop, done. Upload your images in seconds.",
           },
           {
             title: "Secured Images",
-            icon: "🔒",
+            icon: <LockKeyhole />,
             desc: "Your images are secured and private.",
           },
           {
             title: "Simple UI and UX",
-            icon: "💫",
+            icon: <Sparkle />,
             desc: "A clean and elegant UI.",
           },
         ].map((feature, i) => (
           <motion.div key={i} custom={i} variants={fadeUp} className="h-full">
             <Card className="bg-zinc-800 border-zinc-700 h-full transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
               <CardHeader>
-                <CardTitle>
+                <CardTitle className="flex items-center gap-2">
                   <span className="text-3xl mr-2">{feature.icon}</span>
-                  {feature.title}
+                  <span>
+                    <span className="text-xl">{feature.title}</span>
+                  </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-zinc-400">
@@ -116,10 +125,21 @@ export default function LandingPage() {
           <CardHeader>
             <CardTitle className="text-5xl font-bold mb-2">Free</CardTitle>
           </CardHeader>
-          <CardContent className="text-zinc-300 text-lg space-y-2">
-            <p>✅ Unlimited uploads</p>
-            <p>✅ Global image discovery</p>
-            <p>✅ Your images protected</p>
+          <CardContent className="text-zinc-300 text-lg space-y-2 mx-auto">
+            <div className="flex flex-col items-start space-y-2">
+              <p className="flex items-center gap-2">
+                <BookCheck color="white" className="min-w-[1.25rem]" />
+                <span>Unlimited uploads</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <BookCheck color="white" className="min-w-[1.25rem]" />
+                <span>Global image discovery</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <BookCheck color="white" className="min-w-[1.25rem]" />
+                <span>Your images protected</span>
+              </p>
+            </div>
             <div className="mt-6">
               <Link href="/auth/sign-in">
                 <Button className="text-lg px-8 py-4">Start for Free</Button>

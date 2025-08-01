@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
+import { BookHeart, Images, User } from "lucide-react";
 
 type Props = {
   fullName: string;
@@ -21,16 +22,25 @@ const MobileMenu = ({ fullName }: Props) => {
         <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-700 rounded-md shadow-md z-50 flex flex-col p-2">
           <Link href="/gallery" onClick={() => setOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
-              Dashboard
+              <span className="flex items-center gap-2">
+                <Images />
+                Gallery
+              </span>
             </Button>
           </Link>
           <Link href="/fav" onClick={() => setOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">
-              Favorites
+              <span className="flex items-center gap-2">
+                <BookHeart />
+                Favorites
+              </span>
             </Button>
           </Link>
-          <p className="px-3 py-2 text-sm text-white font-semibold">
-            {fullName}
+          <p className="px-3 py-2 text-sm text-white font-extrabold">
+            <span className="flex items-center gap-2">
+              <User />
+              {fullName}
+            </span>
           </p>
           <form action="/auth/sign-out" method="post">
             <Button type="submit" variant="destructive" className="w-full mt-2">

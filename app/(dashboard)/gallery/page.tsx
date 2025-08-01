@@ -30,7 +30,7 @@ export default async function Page() {
     }));
 
   return (
-    <div className="flex flex-col items-center gap-6 p-6 bg-gradient-to-b from-zinc-900 to-black text-white">
+    <div className="flex flex-col items-center gap-6 px-3 py-8 max-w-7xl mx-auto">
       {images.length === 0 ? (
         <div className="text-center space-y-4 mt-8">
           <h2 className="text-2xl font-semibold">

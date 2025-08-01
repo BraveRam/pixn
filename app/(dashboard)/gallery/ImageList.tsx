@@ -25,7 +25,7 @@ export default function ImageList({ images }: Props) {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto px-4 justify-items-center">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto  justify-items-center">
       {storedImages.map((img, idx) => (
         <ImageWithActions key={idx} url={img.signedUrl} path={img.path} />
       ))}
@@ -79,7 +79,7 @@ function ImageWithActions({ url, path }: { url: string; path: string }) {
   };
 
   return (
-    <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900 group">
+    <div className="relative w-full rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900 group">
       <img
         src={url}
         alt="User Upload"
