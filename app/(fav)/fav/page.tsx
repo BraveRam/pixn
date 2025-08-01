@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Heart, Trash, Loader2 } from "lucide-react";
+import { Download, Heart, Trash, Loader2, HeartPlus } from "lucide-react";
 import { toast } from "sonner";
 import {
   deleteImage,
@@ -100,7 +100,12 @@ export default function FavoritesPage() {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
       {images.length > 0 && (
-        <h1 className="text-3xl font-bold text-center mb-8">Favorite Images</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">
+          <span className="flex items-center gap-2">
+            <HeartPlus />
+            Favorite Images
+          </span>
+        </h1>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">

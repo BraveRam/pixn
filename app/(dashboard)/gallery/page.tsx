@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import ImageList from "./ImageList";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Images } from "lucide-react";
 
 export default async function Page() {
   const supabase = await createClient();
@@ -43,7 +44,10 @@ export default async function Page() {
       ) : (
         <>
           <h1 className="text-3xl font-extrabold text-center mb-8">
-            Your Images
+            <span className="flex items-center gap-2">
+              <Images />
+              Gallery
+            </span>
           </h1>
           <ImageList images={images} />
         </>
