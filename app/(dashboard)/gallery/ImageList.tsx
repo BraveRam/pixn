@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Heart, Trash } from "lucide-react";
 import {
@@ -25,7 +25,7 @@ export default function ImageList({ images }: Props) {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto  justify-items-center">
+    <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 p-4 max-w-6xl mx-auto">
       {storedImages.map((img, idx) => (
         <ImageWithActions key={idx} url={img.signedUrl} path={img.path} />
       ))}
@@ -79,12 +79,12 @@ function ImageWithActions({ url, path }: { url: string; path: string }) {
   };
 
   return (
-    <div className="relative w-full rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900 group">
+    <div className="break-inside-avoid mb-4 relative rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900 group">
       <img
         src={url}
         alt="User Upload"
         loading="lazy"
-        className="w-full h-full object-cover"
+        className="w-full h-auto object-cover"
       />
 
       <div className="absolute top-2 right-2 z-20 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -134,6 +134,7 @@ function ImageWithActions({ url, path }: { url: string; path: string }) {
           <Trash className="h-4 w-4" />
         </Button>
       </div>
+
       {metadata && (
         <div className="absolute bottom-0 left-0 w-full z-20 backdrop-blur-sm bg-black/60 text-white text-xs px-4 py-2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <div className="font-semibold truncate">
