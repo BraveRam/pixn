@@ -37,7 +37,7 @@ const Navbar = async () => {
             <Button variant="outline">Favorites</Button>
           </Link>
           <p className="font-bold">{fullName}</p>
-          <form action="signOut">
+          <form action={signOut}>
             <Button variant={"destructive"} type="submit">
               Sign Out
             </Button>
