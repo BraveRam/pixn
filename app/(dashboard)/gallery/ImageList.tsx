@@ -79,7 +79,7 @@ function ImageWithActions({ url, path }: { url: string; path: string }) {
   };
 
   return (
-    <div className="relative w-full sm:max-w-sm aspect-video rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900 group">
+    <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg dark:shadow-gray-900 group">
       <img
         src={url}
         alt="User Upload"
