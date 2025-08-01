@@ -4,6 +4,13 @@ import { Button } from "../ui/button";
 import MobileMenu from "./MobileMenu";
 import { redirect } from "next/navigation";
 
+const signOut = async () => {
+  "use server";
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/auth/sign-in");
+};
+
 const Navbar = async () => {
   const supabase = await createClient();
   const {
@@ -11,12 +18,6 @@ const Navbar = async () => {
   } = await supabase.auth.getUser();
 
   const fullName = user?.user_metadata?.full_name ?? "";
-
-  const signOut = async () => {
-    "use server";
-    await supabase.auth.signOut();
-    redirect("/auth/sign-in");
-  };
 
   return (
     <nav className="bg-black/80 backdrop-blur-md text-white flex items-center justify-between px-6 py-4 border-b border-white/10 fixed top-0 left-0 right-0 z-50 shadow-md">
