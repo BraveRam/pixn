@@ -4,12 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { AlignJustify, BookHeart, Images, User, X } from "lucide-react";
+import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation"
 
 type Props = {
   fullName: string;
 };
 
 const MobileMenu = ({ fullName }: Props) => {
+  const supabase = createClient()
+  const router = useRouter()
   const [open, setOpen] = useState(false);
 
   return (
@@ -42,11 +46,12 @@ const MobileMenu = ({ fullName }: Props) => {
               {fullName}
             </span>
           </p>
-          <form action="/auth/sign-out" method="post">
-            <Button type="submit" variant="destructive" className="w-full mt-2">
-              Sign Out
-            </Button>
-          </form>
+          <Button onClick={()=>{
+         supabase.auth.signOut()
+         router.push("/auth/sign-in")
+          }} type="submit" variant="destructive" className="w-full mt-2">
+            Sign Out
+          </Button>
         </div>
       )}
     </div>

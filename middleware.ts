@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const protectedRoutes = ["/favorites", "/gallery", "/profile", "/upload"];
+  const protectedRoutes = ["/fav", "/gallery", "/profile", "/upload"];
   const isProtected = protectedRoutes.some((path) => pathname.startsWith(path));
 
   if (!user && isProtected) {
