@@ -101,7 +101,7 @@ export default function FavoritesPage() {
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
       {images.length > 0 && (
         <h1 className="text-3xl font-bold text-center mb-8">
-          <span className="flex items-center gap-2">
+          <span className="flex items-center justify-center gap-2">
             <HeartPlus />
             Favorite Images
           </span>
