@@ -44,7 +44,7 @@ export default async function Page() {
       ) : (
         <>
           <h1 className="text-3xl font-extrabold text-center mb-8">
-            <span className="flex items-center gap-2">
+            <span className="flex items-center justify-center gap-2">
               <Images />
               Gallery
             </span>
