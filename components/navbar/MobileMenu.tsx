@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { BookHeart, Images, User } from "lucide-react";
+import { AlignJustify, BookHeart, Images, User, X } from "lucide-react";
 
 type Props = {
   fullName: string;
@@ -15,7 +15,7 @@ const MobileMenu = ({ fullName }: Props) => {
   return (
     <div className="relative">
       <Button variant="outline" onClick={() => setOpen(!open)}>
-        ☰
+        {open ? <X /> : <AlignJustify />}
       </Button>
 
       {open && (
