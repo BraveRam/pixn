@@ -98,12 +98,12 @@ export default function FavoritesPage() {
     );
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8">
       {images.length > 0 && (
         <h1 className="text-3xl font-bold text-center mb-8">Favorite Images</h1>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
         {!images.length ? (
           <div className="col-span-full text-center py-20">
             <h1 className="text-2xl font-bold">You have no favorites yet.</h1>
@@ -112,7 +112,7 @@ export default function FavoritesPage() {
           images.map((img) => (
             <div
               key={img.path}
-              className="relative aspect-video rounded-lg overflow-hidden shadow-lg group bg-zinc-100"
+              className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden shadow-lg group bg-zinc-100"
             >
               <img
                 src={img.signedUrl as string}

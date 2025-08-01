@@ -1,15 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import { Button } from "./ui/button";
 import Link from "next/link";
-
-const signOut = async () => {
-  "use server";
-
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/auth/sign-in");
-};
+import { Button } from "./ui/button";
+import MobileMenu from "./MobileMenu"; // <-- new client component
 
 const Navbar = async () => {
   const supabase = await createClient();
@@ -17,35 +9,40 @@ const Navbar = async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const fullName = user?.user_metadata?.full_name ?? "";
+
   return (
     <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
       <Link href="/">
         <h1 className="font-bold text-3xl">Pixn</h1>
       </Link>
+
       <div className="flex items-center gap-4">
-        <Link href="/upload" className="text-sm font-medium hover:underline">
+        <Link href="/upload">
           <Button className="bg-blue-500 text-white font-extrabold hover:bg-blue-700">
             Upload
           </Button>
         </Link>
-        <Link
-          prefetch
-          href="/gallery"
-          className="text-sm font-medium hover:underline"
-        >
-          <Button variant={"outline"}>Dashboard</Button>
-        </Link>
-        <Link
-          prefetch
-          href="/fav"
-          className="text-sm font-medium hover:underline"
-        >
-          <Button variant={"outline"}>Favorites</Button>
-        </Link>
-        <p className="font-bold">{user?.user_metadata?.full_name}</p>
-        <form action={signOut}>
-          <Button type="submit">Sign Out</Button>
-        </form>
+
+        <div className="hidden sm:flex items-center gap-4">
+          <Link href="/gallery">
+            <Button variant="outline">Dashboard</Button>
+          </Link>
+          <Link href="/fav">
+            <Button variant="outline">Favorites</Button>
+          </Link>
+          <p className="font-bold">{fullName}</p>
+          <form action="/auth/sign-out" method="post">
+            <Button variant={"destructive"} type="submit">
+              Sign Out
+            </Button>
+          </form>
+        </div>
+
+        {/* Mobile menu toggle */}
+        <div className="sm:hidden">
+          <MobileMenu fullName={fullName} />
+        </div>
       </div>
     </nav>
   );

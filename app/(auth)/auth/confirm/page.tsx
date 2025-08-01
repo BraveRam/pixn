@@ -7,12 +7,12 @@ import { Loader } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ConfirmPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
     const token_hash = searchParams.get("token_hash");
     const type = searchParams.get("type") as "email" | "magiclink";
 
@@ -48,30 +48,33 @@ export default function ConfirmPage() {
         setLoading(false);
         return;
       }
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       const { error: findUserError } = await supabase
         .from("users")
         .select("*")
         .eq("email", user?.email)
         .single();
+
       if (findUserError) {
         const { error } = await supabase.from("users").insert({
           email: user?.email,
           name: user?.user_metadata?.full_name,
           avatar_url: user?.user_metadata?.avatar_url,
         });
-        if (error) {
-          throw error;
-        }
+
+        if (error) throw error;
       }
+
       toast.success("Email confirmed! Redirecting...");
       router.push("/gallery");
     };
 
     verify();
-  }, [searchParams, router, supabase]);
+  }, [router, supabase]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 h-screen">
