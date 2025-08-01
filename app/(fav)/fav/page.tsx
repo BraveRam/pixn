@@ -25,10 +25,15 @@ export default function FavoritesPage() {
   useEffect(() => {
     const fetchFavorites = async () => {
       const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log(user);
 
       const { data: favorites, error } = await supabase
         .from("gallery")
         .select("path, name, size")
+        .eq("user_id", user?.id)
         .eq("favorite", true)
         .order("created_at", { ascending: false });
 
