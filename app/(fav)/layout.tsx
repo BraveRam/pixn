@@ -3,7 +3,7 @@ import Navbar from "@/components/navbar/Navbar";
 import React from "react";
 
 export const metadata = {
-  title: "Favorites | Pixn",
+  title: "Favorite | Pixn",
   description: "These are the images you have favorited in Pixn.",
   icons: {
     icon: "/favicon.svg",
