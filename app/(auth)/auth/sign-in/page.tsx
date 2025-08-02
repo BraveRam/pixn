@@ -66,7 +66,7 @@ const LoginPage = () => {
     <div className="h-screen flex items-center justify-center">
       <div className="w-full h-full grid">
         <div className="max-w-xs m-auto w-full flex flex-col items-center">
-          <p className="mt-4 text-xl font-bold tracking-tight flex items-center justify-center">
+          <p className="mt-4 text-xl font-bold tracking-tight flex items-center justify-center gap-2">
             <User color="white" />
             Sign in to your account
           </p>
