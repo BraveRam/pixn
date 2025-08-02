@@ -19,6 +19,7 @@ export async function signInWithEmail({
   });
 
   if (error) {
+    console.error(error);
     throw error;
   }
 

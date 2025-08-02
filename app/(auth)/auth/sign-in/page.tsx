@@ -57,7 +57,7 @@ const LoginPage = () => {
       });
       form.reset();
     } catch (error) {
-      toast("An error occurred while signing in");
+      toast("An error occurred while signing in - try again later.");
       console.error(error);
     }
   };
