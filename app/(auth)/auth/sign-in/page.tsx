@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signInWithEmail } from "./actions";
 import { toast } from "sonner";
+import { User } from "lucide-react";
 
 const formSchema = z.object({
   email: z.email(),
@@ -65,7 +66,8 @@ const LoginPage = () => {
     <div className="h-screen flex items-center justify-center">
       <div className="w-full h-full grid">
         <div className="max-w-xs m-auto w-full flex flex-col items-center">
-          <p className="mt-4 text-xl font-bold tracking-tight">
+          <p className="mt-4 text-xl font-bold tracking-tight flex items-center justify-center">
+            <User color="white" />
             Sign in to your account
           </p>
 
