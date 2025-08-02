@@ -81,7 +81,7 @@ export default function FileUploadFormDemo() {
                   value={field.value}
                   onValueChange={field.onChange}
                   accept="image/*"
-                  maxFiles={2}
+                  maxFiles={5}
                   maxSize={5 * 1024 * 1024}
                   onFileReject={(_, message) => {
                     form.setError("files", {
