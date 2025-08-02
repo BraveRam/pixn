@@ -6,7 +6,7 @@ export const metadata = {
   title: "Favorite | Pixn",
   description: "These are the images you have favorited in Pixn.",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.ico",
   },
 };
 
