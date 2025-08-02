@@ -34,7 +34,7 @@ const formSchema = z.object({
   files: z
     .array(z.custom<File>())
     .min(1, "Please select at least one file")
-    .max(2, "Please select up to 2 files")
+    .max(5, "Please select up to 5 files")
     .refine((files) => files.every((file) => file.size <= 5 * 1024 * 1024), {
       message: "File size must be less than 5MB",
       path: ["files"],
@@ -121,14 +121,14 @@ export default function FileUploadFormDemo() {
                 </FileUpload>
               </FormControl>
               <FormDescription>
-                Upload up to 2 images up to 5MB each.
+                Upload up to 5 images up to 5MB each.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button disabled={isSubmitting} type="submit" className="mt-4">
-          Submit
+          {isSubmitting ? "Uploading..." : "Upload"}
         </Button>
       </form>
     </Form>
