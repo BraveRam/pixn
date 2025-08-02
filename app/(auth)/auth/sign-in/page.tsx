@@ -108,10 +108,6 @@ const LoginPage = () => {
               </Button>
             </form>
           </Form>
-
-          <div className="mt-5 space-y-5 text-center">
-            <p className="font-extrabold">Powered by me;)</p>
-          </div>
         </div>
       </div>
     </div>
