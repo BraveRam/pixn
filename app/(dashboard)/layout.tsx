@@ -1,7 +1,14 @@
 import Footer from "@/components/footer/footer";
 import Navbar from "@/components/navbar/Navbar";
-import { Github, MessageCircle } from "lucide-react";
 import React from "react";
+
+export const metadata = {
+  title: "Gallery | Pixn",
+  description: "These are the images you have uploaded to Pixn.",
+  icons: {
+    icon: "/favicon.svg",
+  },
+};
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (

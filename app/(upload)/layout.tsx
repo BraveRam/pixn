@@ -2,6 +2,14 @@ import Footer from "@/components/footer/footer";
 import Navbar from "@/components/navbar/Navbar";
 import React from "react";
 
+export const metadata = {
+  title: "Upload | Pixn",
+  description: "Upload your images to Pixn.",
+  icons: {
+    icon: "/favicon.svg",
+  },
+};
+
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="mt-20">
