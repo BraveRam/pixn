@@ -4,9 +4,7 @@
 
 ## Overview
 
-**pixn** is a public project by [BraveRam](https://github.com/BraveRam), built primarily with TypeScript, CSS, and JavaScript.
-
-> _Project description and features can be added here!_
+**pixn**, an image uploader, is a public project by [BraveRam](https://github.com/BraveRam), built primarily with the following technologies.
 
 ## Technology Stack
 
@@ -44,7 +42,6 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## License
 
-_This project does not specify a license yet._  
 Feel free to suggest one or ask for guidance.
 
 ## Author
