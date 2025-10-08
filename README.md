@@ -11,8 +11,10 @@
 ## Technology Stack
 
 - **TypeScript** (Main language)
-- **CSS**
+- **TailwindCSS**
 - **JavaScript**
+- **Next.JS**
+- **Supabase**
 
 ## Getting Started
 
