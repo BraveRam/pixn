@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# pixn
+
+[![Homepage](https://img.shields.io/badge/homepage-pixn.vercel.app-blue)](https://pixn.vercel.app)
+
+## Overview
+
+**pixn** is a public project by [BraveRam](https://github.com/BraveRam), built primarily with TypeScript, CSS, and JavaScript.
+
+> _Project description and features can be added here!_
+
+## Technology Stack
+
+- **TypeScript** (Main language)
+- **CSS**
+- **JavaScript**
 
 ## Getting Started
 
-First, run the development server:
-
+Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/BraveRam/pixn.git
+cd pixn
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Run the development server:
+```bash
+npm start
+# or
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visit [https://pixn.vercel.app](https://pixn.vercel.app) for the live site.
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+_This project does not specify a license yet._  
+Feel free to suggest one or ask for guidance.
 
-## Deploy on Vercel
+## Author
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [BraveRam](https://github.com/BraveRam)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
