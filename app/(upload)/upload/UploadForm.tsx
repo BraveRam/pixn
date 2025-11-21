@@ -75,9 +75,14 @@ export default function FileUploadFormDemo() {
 
   const uploadMutation = useMutation({
     mutationFn: uploadApi.uploadImages,
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Image uploaded successfully");
       form.reset();
+
+      // Refresh the count after successful upload
+      const newCount = await checkImageLimit.getCurrentCount();
+      setImageCount(newCount);
+
       router.push("/gallery");
     },
     onError: (error: any) => {

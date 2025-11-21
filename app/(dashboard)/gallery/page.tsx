@@ -34,7 +34,6 @@ export default function GalleryPage() {
   const { data: images = [], isLoading } = useQuery({
     queryKey: galleryKeys.all,
     queryFn: fetchGalleryImages,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const deleteMutation = useMutation({

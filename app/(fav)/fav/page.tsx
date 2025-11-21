@@ -34,7 +34,6 @@ export default function FavoritesPage() {
   const { data: images = [], isLoading } = useQuery({
     queryKey: galleryKeys.favorites,
     queryFn: fetchFavoriteImages,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const deleteMutation = useMutation({
