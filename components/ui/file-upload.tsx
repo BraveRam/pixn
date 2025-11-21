@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, truncateFileName } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import {
   FileArchiveIcon,
@@ -970,10 +970,10 @@ function FileUploadItem(props: FileUploadItemProps) {
   const statusText = fileState.error
     ? `Error: ${fileState.error}`
     : fileState.status === "uploading"
-    ? `Uploading: ${fileState.progress}% complete`
-    : fileState.status === "success"
-    ? "Upload complete"
-    : "Ready to upload";
+      ? `Uploading: ${fileState.progress}% complete`
+      : fileState.status === "success"
+        ? "Upload complete"
+        : "Ready to upload";
 
   const ItemPrimitive = asChild ? Slot : "div";
 
@@ -984,9 +984,8 @@ function FileUploadItem(props: FileUploadItemProps) {
         id={id}
         aria-setsize={fileCount}
         aria-posinset={fileIndex}
-        aria-describedby={`${nameId} ${sizeId} ${statusId} ${
-          fileState.error ? messageId : ""
-        }`}
+        aria-describedby={`${nameId} ${sizeId} ${statusId} ${fileState.error ? messageId : ""
+          }`}
         aria-labelledby={nameId}
         data-slot="file-upload-item"
         dir={context.dir}
@@ -1011,6 +1010,7 @@ function formatBytes(bytes: number) {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${(bytes / 1024 ** i).toFixed(i ? 1 : 0)} ${sizes[i]}`;
 }
+
 
 function getFileIcon(file: File) {
   const type = file.type;
@@ -1158,7 +1158,7 @@ function FileUploadItemMetadata(props: FileUploadItemMetadataProps) {
               size === "sm" && "font-normal text-[13px] leading-snug"
             )}
           >
-            {itemContext.fileState.file.name}
+            {truncateFileName(itemContext.fileState.file.name)}
           </span>
           <span
             id={itemContext.sizeId}
@@ -1305,9 +1305,8 @@ function FileUploadItemProgress(props: FileUploadItemProgressProps) {
           <div
             className="h-full w-full flex-1 bg-primary transition-transform duration-300 ease-linear"
             style={{
-              transform: `translateX(-${
-                100 - itemContext.fileState.progress
-              }%)`,
+              transform: `translateX(-${100 - itemContext.fileState.progress
+                }%)`,
             }}
           />
         </ItemProgressPrimitive>

@@ -12,10 +12,9 @@ export const metadata = {
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="mt-20">
+    <div>
       <Navbar />
       {children}
-      <Footer />
     </div>
   );
 };

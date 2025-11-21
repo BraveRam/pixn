@@ -1,66 +1,111 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Heart, Trash, Loader2, HeartPlus } from "lucide-react";
+import { Download, Heart, Trash, BookHeart, Loader2, Copy, X } from "lucide-react";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import FavoritesSkeleton from "./FavoritesSkeleton";
+import { cn, truncateFileName } from "@/lib/utils";
 import {
-  deleteImage,
-  deleteMetadata,
-  toggleFavorite,
-} from "../../../utils/gallery/actions";
-import { createClient } from "@/utils/supabase/client";
-
-type Image = {
-  path: string;
-  name: string;
-  size: number;
-  signedUrl: string | Blob | undefined;
-};
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { galleryApi } from "@/lib/api/gallery";
+import { galleryKeys, fetchFavoriteImages, type Image } from "@/lib/api/queries";
 
 export default function FavoritesPage() {
-  const [images, setImages] = useState<Image[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
+  const [deletingImage, setDeletingImage] = useState<Image | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+  // Fetch favorites with caching
+  const { data: images = [], isLoading } = useQuery({
+    queryKey: galleryKeys.favorites,
+    queryFn: fetchFavoriteImages,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-      const { data: favorites, error } = await supabase
-        .from("gallery")
-        .select("path, name, size")
-        .eq("user_id", user?.id)
-        .eq("favorite", true)
-        .order("created_at", { ascending: false });
+  const deleteMutation = useMutation({
+    mutationFn: galleryApi.deleteImage,
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: galleryKeys.favorites });
 
-      if (error) {
-        toast.error("Failed to load favorites");
-        setLoading(false);
-        return;
-      }
+      // Snapshot previous value
+      const previousImages = queryClient.getQueryData<Image[]>(galleryKeys.favorites);
 
-      const signedImages = await Promise.all(
-        favorites.map(async (img) => {
-          const { data } = await supabase.storage
-            .from("images")
-            .createSignedUrl(img.path, 60 * 60);
-          return {
-            ...img,
-            signedUrl: data?.signedUrl || null,
-          } as Image;
-        })
+      // Optimistically remove image
+      queryClient.setQueryData<Image[]>(galleryKeys.favorites, (old) =>
+        old ? old.filter((img) => img.path !== variables.path) : []
       );
 
-      const valid = signedImages.filter((img) => img.signedUrl);
-      setImages(valid);
-      setLoading(false);
-    };
+      setDeletingImage(null);
 
-    fetchFavorites();
-  }, []);
+      return { previousImages };
+    },
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousImages) {
+        queryClient.setQueryData(galleryKeys.favorites, context.previousImages);
+      }
+      console.error("Failed to delete image", error);
+      toast.error("Failed to delete image");
+    },
+    onSuccess: () => {
+      toast.success("Image deleted");
+    },
+    onSettled: () => {
+      // Refetch to ensure sync
+      queryClient.invalidateQueries({ queryKey: galleryKeys.all });
+      queryClient.invalidateQueries({ queryKey: galleryKeys.favorites });
+    },
+  });
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: galleryApi.toggleFavorite,
+    onMutate: async (variables) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: galleryKeys.favorites });
+
+      // Snapshot previous value
+      const previousImages = queryClient.getQueryData<Image[]>(galleryKeys.favorites);
+
+      // Optimistically remove from favorites (since this is favorites page)
+      queryClient.setQueryData<Image[]>(galleryKeys.favorites, (old) =>
+        old ? old.filter((img) => img.path !== variables.path) : []
+      );
+
+      return { previousImages };
+    },
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousImages) {
+        queryClient.setQueryData(galleryKeys.favorites, context.previousImages);
+      }
+      console.error("Failed to toggle favorite", error);
+      toast.error("Failed to toggle favorite");
+    },
+    onSuccess: () => {
+      toast.success("Removed from favorites");
+    },
+    onSettled: () => {
+      // Refetch to ensure sync
+      queryClient.invalidateQueries({ queryKey: galleryKeys.all });
+      queryClient.invalidateQueries({ queryKey: galleryKeys.favorites });
+    },
+  });
 
   const handleDownload = async (url: string, path: string) => {
     try {
@@ -76,94 +121,269 @@ export default function FavoritesPage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
+      toast.success("Image downloaded");
     } catch (err) {
+      console.error("Failed to download image", err);
       toast.error("Failed to download image");
     }
   };
 
-  const handleDelete = async (path: string) => {
-    await deleteImage(path);
-    await deleteMetadata(path);
-    setImages((prev) => prev.filter((img) => img.path !== path));
-    toast.success("Image deleted");
+  const handleDelete = (img: Image) => {
+    setDeletingImage(img);
   };
 
-  const handleToggle = async (path: string) => {
-    await toggleFavorite(path);
-    setImages((prev) => prev.filter((img) => img.path !== path));
-    toast.success("Favorite removed");
+  const confirmDelete = () => {
+    if (!deletingImage || deleteMutation.isPending) return;
+    deleteMutation.mutate({ path: deletingImage.path });
   };
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-[50vh]">
-        <Loader2 className="w-8 h-8 text-zinc-500 animate-spin" />
-      </div>
-    );
+  const handleToggle = (path: string) => {
+    toggleFavoriteMutation.mutate({ path });
+  };
+
+  if (isLoading) return <FavoritesSkeleton />;
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-8">
-      {images.length > 0 && (
-        <h1 className="text-3xl font-bold text-center mb-8">
-          <span className="flex items-center justify-center gap-2">
-            <HeartPlus />
-            Favorite Images
-          </span>
-        </h1>
-      )}
+    <TooltipProvider>
+      <div className="min-h-screen bg-background pt-24 pb-10">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-8 text-center">Favorites</h1>
+          {images.length > 0 ? (
+            <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4 mx-auto max-w-7xl">
+              {images.map((img) => (
+                <div key={img.path} className="break-inside-avoid">
+                  <GalleryImage
+                    img={img}
+                    onDownload={handleDownload}
+                    onToggle={handleToggle}
+                    onDelete={() => handleDelete(img)}
+                    onClick={() => setSelectedImage(img)}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center">
+              <div className="w-20 h-20 bg-secondary/50 rounded-full flex items-center justify-center">
+                <BookHeart className="w-10 h-10 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight">No favorites yet</h2>
+                <p className="text-muted-foreground max-w-sm mx-auto">
+                  Mark images as favorites to see them here.
+                </p>
+              </div>
+              <Link href="/gallery" prefetch>
+                <Button size="lg" className="rounded-full font-semibold cursor-pointer">
+                  Browse Gallery
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-        {!images.length ? (
-          <div className="col-span-full text-center py-20">
-            <h1 className="text-2xl font-bold">You have no favorites yet.</h1>
-          </div>
-        ) : (
-          images.map((img) => (
-            <div
-              key={img.path}
-              className="relative w-full max-w-sm rounded-lg overflow-hidden shadow-lg group"
-            >
+      <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+        <DialogContent className="max-w-4xl w-[95vw] bg-background/95 backdrop-blur-sm border-none p-0 overflow-hidden">
+          <div className="relative w-full h-[80vh] flex items-center justify-center bg-black/5">
+            {selectedImage && (
               <img
-                src={img.signedUrl}
-                alt={img.name || "Favorite Image"}
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                src={selectedImage.signedUrl as string}
+                alt={selectedImage.name}
+                className="max-w-full max-h-full object-contain"
               />
-
-              <div className="absolute top-2 right-2 z-20 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button
-                  onClick={() =>
-                    handleDownload(img.signedUrl as string, img.path)
+            )}
+          </div>
+          <div className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-background border-t gap-4">
+            <div className="flex flex-col min-w-0 flex-1 w-full">
+              <DialogTitle className="font-semibold text-lg truncate">{truncateFileName(selectedImage?.name || "", 30)}</DialogTitle>
+              <p className="text-sm text-muted-foreground">{formatSize(selectedImage?.size || 0)}</p>
+            </div>
+            <div className="flex gap-2 shrink-0 w-full sm:w-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (selectedImage?.signedUrl) {
+                    navigator.clipboard.writeText(selectedImage.signedUrl as string);
+                    toast.success("Link copied to clipboard");
                   }
+                }}
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Copy Link
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => {
+                  if (selectedImage) {
+                    handleDownload(selectedImage.signedUrl as string, selectedImage.path);
+                  }
+                }}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deletingImage} onOpenChange={(open) => !open && setDeletingImage(null)}>
+        <DialogContent className="max-w-md w-[90vw] bg-background border-border">
+          <DialogHeader>
+            <DialogTitle>Delete Image</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete "{deletingImage?.name}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setDeletingImage(null)}
+              disabled={deleteMutation.isPending}
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="cursor-pointer"
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </TooltipProvider>
+  );
+}
+
+function GalleryImage({
+  img,
+  onDownload,
+  onToggle,
+  onDelete,
+  onClick,
+}: {
+  img: Image;
+  onDownload: (url: string, path: string) => void;
+  onToggle: (path: string) => void;
+  onDelete: (img: Image) => void;
+  onClick: () => void;
+}) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div
+      className={cn(
+        "relative group rounded-xl overflow-hidden bg-secondary/20 mb-4 cursor-pointer",
+        isLoading && "h-64" // Prevent collapse during loading
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
+    >
+      {isLoading && <Skeleton className="w-full h-full absolute inset-0 z-10" />}
+
+      <img
+        src={img.signedUrl as string}
+        alt={img.name || "Gallery Image"}
+        className={cn(
+          "w-full h-auto object-cover transition-transform duration-500 ease-in-out",
+          isLoading ? "opacity-0" : "opacity-100",
+          isHovered && "scale-105"
+        )}
+        onLoad={() => setIsLoading(false)}
+      />
+
+      {/* Overlay Gradient */}
+      <div className={cn(
+        "absolute inset-0 bg-black/40 transition-opacity duration-300 flex flex-col justify-between p-4",
+        isHovered ? "opacity-100" : "opacity-0"
+      )}>
+        <div className="flex justify-end">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle(img.path);
+                }}
+                variant="secondary"
+                size="icon"
+                className="rounded-full h-10 w-10 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
+              >
+                <Heart className="h-5 w-5 text-red-500 fill-red-500" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Unfavorite</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        <div className="flex justify-between items-end">
+          <a
+            href={img.signedUrl as string}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white font-medium truncate max-w-[150px] hover:underline cursor-pointer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {truncateFileName(img.name)}
+          </a>
+
+          <div className="flex gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDownload(img.signedUrl as string, img.path);
+                  }}
                   variant="secondary"
                   size="icon"
+                  className="rounded-full h-9 w-9 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
                 >
                   <Download className="h-4 w-4" />
                 </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Download</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <Button
-                  onClick={() => handleToggle(img.path)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(img);
+                  }}
                   variant="secondary"
                   size="icon"
-                >
-                  <Heart className="h-4 w-4 text-red-500 fill-red-500" />
-                </Button>
-                <Button
-                  onClick={() => handleDelete(img.path)}
-                  variant="secondary"
-                  size="icon"
+                  className="rounded-full h-9 w-9 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
-              </div>
-
-              <div className="absolute bottom-0 left-0 w-full bg-white/80 text-black text-xs px-4 py-2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="font-semibold truncate w-3/5">
-                  {img.name || "Unnamed"}
-                </span>
-                <span className="text-zinc-500">{formatSize(img.size)}</span>
-              </div>
-            </div>
-          ))
-        )}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
       </div>
     </div>
   );

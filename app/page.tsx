@@ -1,178 +1,263 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
-  BookCheck,
+  ArrowRight,
   Github,
-  ImageUp,
-  LockKeyhole,
+  Heart,
+  ImagePlus,
+  Lock,
   MessageCircle,
-  Sparkle,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i: number = 1) => ({
+const fadeIn = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.2, duration: 0.7 },
+    transition: { delay: i * 0.15, duration: 0.6, ease: [0.4, 0, 0.2, 1] as const },
   }),
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as const },
+  },
 };
 
 export default function LandingPage() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-zinc-900 to-black text-white px-6">
-      <motion.section
-        className="flex items-center justify-center w-full mt-16"
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-      >
-        <Image
-          src="/logo.png"
-          alt="Logo"
-          width={100}
-          height={100}
-          className="rounded-full"
-        />
-      </motion.section>
-      <motion.section
-        className="max-w-4xl text-center mt-15 space-y-6"
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.h1
-          className="text-5xl font-bold tracking-tight"
-          variants={fadeUp}
-        >
-          🎨 Save Your Memories, blud.
-        </motion.h1>
-        <motion.p className="text-zinc-400 text-lg" variants={fadeUp}>
-          Discover, upload, and manage your favorite shots in the most elegant
-          gallery ever built.
-        </motion.p>
-        <motion.div
-          className="flex items-center justify-center gap-4 mt-4"
-          variants={fadeUp}
-        >
-          <Link href="/auth/sign-in">
-            <Button className="text-lg px-6 py-4">Get Started</Button>
-          </Link>
-          <Link href="/gallery">
-            <Button variant="outline" className="text-lg px-6 py-4">
-              Explore Gallery
-            </Button>
-          </Link>
-        </motion.div>
-      </motion.section>
-      <motion.section
-        className="grid md:grid-cols-3 gap-6 mt-24 max-w-5xl w-full items-stretch"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-      >
-        {[
-          {
-            title: "Upload Instantly",
-            icon: <ImageUp />,
-            desc: "Drag, drop, done. Upload your images in seconds.",
-          },
-          {
-            title: "Secured Images",
-            icon: <LockKeyhole />,
-            desc: "Your images are secured and private.",
-          },
-          {
-            title: "Simple UI and UX",
-            icon: <Sparkle />,
-            desc: "A clean and elegant UI.",
-          },
-        ].map((feature, i) => (
-          <motion.div key={i} custom={i} variants={fadeUp} className="h-full">
-            <Card className="bg-zinc-800 border-zinc-700 h-full transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <span className="text-3xl mr-2">{feature.icon}</span>
-                  <span>
-                    <span className="text-xl">{feature.title}</span>
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-zinc-400">
-                {feature.desc}
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.section>
-      <motion.section
-        className="max-w-3xl w-full mt-28 text-center"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false }}
-        variants={fadeUp}
-      >
-        <h2 className="text-4xl font-bold mb-4">Simple pricing</h2>
-        <p className="text-zinc-400 text-lg mb-10">
-          No credit cards. Free forever😜
-        </p>
-        <Card className="bg-zinc-800 border-zinc-700 py-10 transition-transform duration-300 hover:scale-[1.03] hover:shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-5xl font-bold mb-2">Free</CardTitle>
-          </CardHeader>
-          <CardContent className="text-zinc-300 text-lg space-y-2 mx-auto">
-            <div className="flex flex-col items-start space-y-2">
-              <p className="flex items-center gap-2">
-                <BookCheck color="white" className="min-w-[1.25rem]" />
-                <span>Unlimited uploads</span>
-              </p>
-              <p className="flex items-center gap-2">
-                <BookCheck color="white" className="min-w-[1.25rem]" />
-                <span>Global image discovery</span>
-              </p>
-              <p className="flex items-center gap-2">
-                <BookCheck color="white" className="min-w-[1.25rem]" />
-                <span>Your images protected</span>
-              </p>
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10">
+      {/* Animated background */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-2/3 left-2/3 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+      </div>
+
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 pt-32 pb-20">
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={scaleIn}
+            className="mb-8 relative"
+          >
+            <div className="relative w-24 h-24 md:w-32 md:h-32">
+              <Image
+                src="/logo.png"
+                alt="Pixn Logo"
+                fill
+                className="object-contain drop-shadow-2xl"
+                priority
+              />
             </div>
-            <div className="mt-6">
+          </motion.div>
+
+          <motion.h1
+            initial="hidden"
+            animate="visible"
+            custom={1}
+            variants={fadeIn}
+            className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent"
+          >
+            Your Images,{" "}
+            <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              Beautifully
+            </span>{" "}
+            Organized
+          </motion.h1>
+
+          <motion.p
+            initial="hidden"
+            animate="visible"
+            custom={2}
+            variants={fadeIn}
+            className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl leading-relaxed"
+          >
+            Upload, organize, and showcase your favorite images in a stunning gallery designed for creators.
+          </motion.p>
+
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            custom={3}
+            variants={fadeIn}
+            className="flex flex-col sm:flex-row items-center gap-4"
+          >
+            <Link href="/auth/sign-in">
+              <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all group">
+                Get Started Free
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link href="/gallery">
+              <Button size="lg" variant="outline" className="rounded-full px-8 py-6 text-lg font-semibold">
+                Explore Gallery
+              </Button>
+            </Link>
+          </motion.div>
+
+          <motion.p
+            initial="hidden"
+            animate="visible"
+            custom={4}
+            variants={fadeIn}
+            className="mt-6 text-sm text-muted-foreground"
+          >
+            No credit card required · Free forever
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="container mx-auto px-4 py-20">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"
+        >
+          {[
+            {
+              icon: <ImagePlus className="w-8 h-8" />,
+              title: "Effortless Uploads",
+              description: "Drag and drop your images. Upload up to 3 at once with a simple, intuitive interface.",
+              gradient: "from-blue-500 to-cyan-500",
+            },
+            {
+              icon: <Heart className="w-8 h-8" />,
+              title: "Smart Organization",
+              description: "Mark your favorites and create beautiful, curated collections that matter to you.",
+              gradient: "from-pink-500 to-rose-500",
+            },
+            {
+              icon: <Lock className="w-8 h-8" />,
+              title: "Private & Secure",
+              description: "Your images are encrypted and protected. Only you have access to your gallery.",
+              gradient: "from-purple-500 to-indigo-500",
+            },
+          ].map((feature, i) => (
+            <motion.div key={i} custom={i} variants={fadeIn}>
+              <Card className="p-8 h-full border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg group bg-card/50 backdrop-blur">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
+                  <div className="text-white">
+                    {feature.icon}
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="container mx-auto px-4 py-20">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="grid grid-cols-3 gap-8 text-center">
+            {[
+              { value: "Fast", label: "Upload Speed" },
+              { value: "5MB", label: "Max Size" },
+              { value: "Free", label: "Forever" },
+            ].map((stat, i) => (
+              <motion.div key={i} custom={i} variants={fadeIn}>
+                <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-sm md:text-base text-muted-foreground">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="container mx-auto px-4 py-20">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={scaleIn}
+          className="max-w-4xl mx-auto"
+        >
+          <Card className="relative overflow-hidden p-12 md:p-16 text-center bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10 border-2 border-primary/20">
+            <div className="absolute inset-0 bg-grid-white/5" />
+            <div className="relative z-10">
+              <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Start Your Gallery Today
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join creators who trust Pixn to showcase their best work.
+              </p>
               <Link href="/auth/sign-in">
-                <Button className="text-lg px-8 py-4">Start for Free</Button>
+                <Button size="lg" className="rounded-full px-12 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all">
+                  Create Free Account
+                </Button>
               </Link>
             </div>
-          </CardContent>
-        </Card>
-      </motion.section>
-      <motion.footer
-        className="mt-28 mb-10 text-center text-zinc-500 space-y-4"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: false }}
-        variants={fadeUp}
-      >
-        <p>© 2025 Pixn. All rights reserved.</p>
-        <div className="flex justify-center gap-6 text-white">
-          <a
-            href="https://t.me/plxor"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <MessageCircle />
-          </a>
-          <a
-            href="https://github.com/braveram/pixn"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Github />
-          </a>
+          </Card>
+        </motion.div>
+      </section>
+
+      {/* Footer */}
+      <footer className="container mx-auto px-4 py-12 mt-20 border-t border-border/40">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className="relative w-8 h-8">
+              <Image
+                src="/logo.png"
+                alt="Pixn"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <span className="font-semibold">Pixn</span>
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            © 2025 Pixn. All rights reserved.
+          </p>
+
+          <div className="flex items-center gap-4">
+            <a
+              href="https://t.me/plxor"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" />
+            </a>
+            <a
+              href="https://github.com/braveram/pixn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Github className="w-5 h-5" />
+            </a>
+          </div>
         </div>
-      </motion.footer>
+      </footer>
     </main>
   );
 }

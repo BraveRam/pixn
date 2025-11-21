@@ -4,3 +4,16 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+export function truncateFileName(name: string, maxLength: number = 20) {
+  if (name.length <= maxLength) return name;
+  const extension = name.split(".").pop();
+  if (!extension) return name.slice(0, maxLength) + "...";
+
+  const extLength = extension.length + 1; // +1 for dot
+  const nameLength = maxLength - extLength - 3; // -3 for dots
+
+  if (nameLength < 1) return name.slice(0, maxLength) + "...";
+
+  return `${name.slice(0, nameLength)}...${extension}`;
+}
