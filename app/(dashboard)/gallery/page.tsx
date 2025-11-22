@@ -267,7 +267,18 @@ export default function GalleryPage() {
           <div className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-background border-t gap-4">
             <div className="flex flex-col min-w-0 flex-1 w-full">
               <DialogTitle className="font-semibold text-lg truncate">{truncateFileName(selectedImage?.name || "", 30)}</DialogTitle>
-              <p className="text-sm text-muted-foreground">{formatSize(selectedImage?.size || 0)}</p>
+              <div className="flex flex-col gap-0.5">
+                <p className="text-sm text-muted-foreground">{formatSize(selectedImage?.size || 0)}</p>
+                {selectedImage?.created_at && (
+                  <p className="text-xs text-muted-foreground">
+                    Uploaded {new Date(selectedImage.created_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric"
+                    })}
+                  </p>
+                )}
+              </div>
             </div>
             <div className="flex gap-2 shrink-0 w-full sm:w-auto">
               <Button

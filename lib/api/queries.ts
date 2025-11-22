@@ -6,6 +6,7 @@ export type Image = {
     size: number;
     signedUrl: string | Blob | undefined;
     favorite: boolean;
+    created_at?: string;
 };
 
 // Query keys factory
@@ -27,7 +28,7 @@ export const fetchGalleryImages = async (): Promise<Image[]> => {
 
     const { data: galleryData, error } = await supabase
         .from("gallery")
-        .select("path, name, size, favorite")
+        .select("path, name, size, favorite, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -65,7 +66,7 @@ export const fetchFavoriteImages = async (): Promise<Image[]> => {
 
     const { data: galleryData, error } = await supabase
         .from("gallery")
-        .select("path, name, size, favorite")
+        .select("path, name, size, favorite, created_at")
         .eq("user_id", user.id)
         .eq("favorite", true)
         .order("created_at", { ascending: false });
