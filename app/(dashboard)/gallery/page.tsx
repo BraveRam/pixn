@@ -253,8 +253,8 @@ export default function GalleryPage() {
       </div>
 
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl w-[95vw] bg-background/95 backdrop-blur-sm border-none p-0 overflow-hidden">
-          <div className="relative w-full h-[80vh] flex items-center justify-center bg-black/5">
+        <DialogContent className="max-w-[800px] w-full bg-background/95 backdrop-blur-sm border-none p-0 overflow-hidden">
+          <div className="relative w-full h-[600px] max-h-[60vh] flex items-center justify-center bg-black/5">
             {selectedImage && (
               <Image
                 src={selectedImage.signedUrl as string}
