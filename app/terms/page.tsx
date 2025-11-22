@@ -4,12 +4,7 @@ import { FileText } from "lucide-react";
 
 export default function TermsOfServicePage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10">
-            {/* Animated background */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-            </div>
+        <div className="min-h-screen bg-background">
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">
                 <Link href="/auth/sign-in" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">

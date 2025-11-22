@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Heart, Trash, Images, Loader2, Copy, X } from "lucide-react";
+import { Download, Heart, Trash, Images, Loader2, Copy, Home } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import Image from "next/image";
 import GallerySkeleton from "./GallerySkeleton";
 import { cn, truncateFileName } from "@/lib/utils";
+import { SearchInput } from "@/components/SearchInput";
 import {
   Tooltip,
   TooltipContent,
@@ -23,17 +25,20 @@ import {
 } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { galleryApi } from "@/lib/api/gallery";
-import { galleryKeys, fetchGalleryImages, type Image } from "@/lib/api/queries";
+import { galleryKeys, fetchGalleryImages, type Image as GalleryImage } from "@/lib/api/queries";
 
 export default function GalleryPage() {
-  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
-  const [deletingImage, setDeletingImage] = useState<Image | null>(null);
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [deletingImage, setDeletingImage] = useState<GalleryImage | null>(null);
   const queryClient = useQueryClient();
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+
   // Fetch images with caching
-  const { data: images = [], isLoading } = useQuery({
-    queryKey: galleryKeys.all,
-    queryFn: fetchGalleryImages,
+  const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
+    queryKey: searchQuery ? ["gallery", "search", searchQuery] : galleryKeys.all,
+    queryFn: () => searchQuery ? import("@/lib/api/queries").then(m => m.searchImages(searchQuery)) : fetchGalleryImages(),
   });
 
   const deleteMutation = useMutation({
@@ -43,10 +48,10 @@ export default function GalleryPage() {
       await queryClient.cancelQueries({ queryKey: galleryKeys.all });
 
       // Snapshot previous value
-      const previousImages = queryClient.getQueryData<Image[]>(galleryKeys.all);
+      const previousImages = queryClient.getQueryData<GalleryImage[]>(galleryKeys.all);
 
       // Optimistically remove image
-      queryClient.setQueryData<Image[]>(galleryKeys.all, (old) =>
+      queryClient.setQueryData<GalleryImage[]>(galleryKeys.all, (old) =>
         old ? old.filter((img) => img.path !== variables.path) : []
       );
 
@@ -59,7 +64,6 @@ export default function GalleryPage() {
       if (context?.previousImages) {
         queryClient.setQueryData(galleryKeys.all, context.previousImages);
       }
-      console.error("Failed to delete image", error);
       toast.error("Failed to delete image");
     },
     onSuccess: () => {
@@ -75,14 +79,21 @@ export default function GalleryPage() {
   const toggleFavoriteMutation = useMutation({
     mutationFn: galleryApi.toggleFavorite,
     onMutate: async (variables) => {
+      // Get the current query key
+      const currentQueryKey = searchQuery
+        ? ["gallery", "search", searchQuery]
+        : galleryKeys.all;
+
       // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: currentQueryKey });
       await queryClient.cancelQueries({ queryKey: galleryKeys.all });
 
-      // Snapshot previous value
-      const previousImages = queryClient.getQueryData<Image[]>(galleryKeys.all);
+      // Snapshot previous values
+      const previousImages = queryClient.getQueryData<GalleryImage[]>(currentQueryKey);
+      const previousAllImages = queryClient.getQueryData<GalleryImage[]>(galleryKeys.all);
 
-      // Optimistically update
-      queryClient.setQueryData<Image[]>(galleryKeys.all, (old) =>
+      // Optimistically update the current view
+      queryClient.setQueryData<GalleryImage[]>(currentQueryKey, (old) =>
         old
           ? old.map((img) =>
             img.path === variables.path
@@ -92,25 +103,41 @@ export default function GalleryPage() {
           : []
       );
 
-      return { previousImages };
+      // Also update the main gallery cache if it exists
+      if (searchQuery) {
+        queryClient.setQueryData<GalleryImage[]>(galleryKeys.all, (old) =>
+          old
+            ? old.map((img) =>
+              img.path === variables.path
+                ? { ...img, favorite: !img.favorite }
+                : img
+            )
+            : []
+        );
+      }
+
+      return { previousImages, previousAllImages, currentQueryKey };
     },
     onError: (error, variables, context) => {
       // Rollback on error
       if (context?.previousImages) {
-        queryClient.setQueryData(galleryKeys.all, context.previousImages);
+        queryClient.setQueryData(context.currentQueryKey, context.previousImages);
       }
-      console.error("Failed to toggle favorite", error);
+      if (context?.previousAllImages) {
+        queryClient.setQueryData(galleryKeys.all, context.previousAllImages);
+      }
       toast.error("Failed to toggle favorite");
     },
-    onSuccess: (data) => {
-      toast.success(
-        data.data.favorite ? "Marked as favorite" : "Removed from favorites"
-      );
+    onSuccess: () => {
+      // Silent success - no toast
     },
     onSettled: () => {
       // Refetch to ensure sync
       queryClient.invalidateQueries({ queryKey: galleryKeys.all });
       queryClient.invalidateQueries({ queryKey: galleryKeys.favorites });
+      if (searchQuery) {
+        queryClient.invalidateQueries({ queryKey: ["gallery", "search", searchQuery] });
+      }
     },
   });
 
@@ -128,12 +155,12 @@ export default function GalleryPage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
-    } catch (err) {
+    } catch {
       toast.error("Failed to download image");
     }
   };
 
-  const handleDelete = (img: Image) => {
+  const handleDelete = (img: GalleryImage) => {
     setDeletingImage(img);
   };
 
@@ -146,28 +173,53 @@ export default function GalleryPage() {
     toggleFavoriteMutation.mutate({ path });
   };
 
-  if (isLoading) return <GallerySkeleton />;
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+
 
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background pt-24 pb-10">
         <div className="container mx-auto px-4">
           {/* Header to ensure "Gallery" text is visible if user expects it, or just spacing */}
-          <h1 className="text-4xl font-extrabold tracking-tight mb-8 text-center">Gallery</h1>
+          <div className="flex flex-col items-center mb-8 space-y-4">
+            <h1 className="text-4xl font-extrabold tracking-tight text-center">Gallery</h1>
+            <SearchInput onSearch={handleSearch} placeholder="Search your memories..." currentQuery={searchQuery} />
+          </div>
 
-          {images.length > 0 ? (
-            <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4 mx-auto max-w-7xl">
-              {images.map((img) => (
-                <div key={img.path} className="break-inside-avoid">
-                  <GalleryImage
-                    img={img}
-                    onDownload={handleDownload}
-                    onToggle={handleToggle}
-                    onDelete={() => handleDelete(img)}
-                    onClick={() => setSelectedImage(img)}
-                  />
+          {isLoading ? (
+            <GallerySkeleton />
+          ) : images.length > 0 ? (
+            <div className="space-y-6 mx-auto max-w-7xl">
+              {searchQuery && (
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSearchQuery("")}
+                    className="rounded-full shrink-0 hover:bg-secondary/80"
+                    title="Show all images"
+                  >
+                    <Home className="w-5 h-5" />
+                  </Button>
+                  <h2 className="text-2xl font-bold tracking-tight">Search results for &quot;{searchQuery}&quot;</h2>
                 </div>
-              ))}
+              )}
+              <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+                {images.map((img) => (
+                  <div key={img.path} className="break-inside-avoid">
+                    <GalleryImage
+                      img={img}
+                      onDownload={handleDownload}
+                      onToggle={handleToggle}
+                      onDelete={() => handleDelete(img)}
+                      onClick={() => setSelectedImage(img)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center">
@@ -175,16 +227,26 @@ export default function GalleryPage() {
                 <Images className="w-10 h-10 text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight">No images yet</h2>
+                <h2 className="text-2xl font-bold tracking-tight">{searchQuery ? "No results found" : "No images yet"}</h2>
                 <p className="text-muted-foreground max-w-sm mx-auto">
-                  Upload your first image to start building your collection.
+                  {searchQuery ? "Try a different search term." : "Upload your first image to start building your collection."}
                 </p>
               </div>
-              <Link href="/upload" prefetch>
-                <Button size="lg" className="rounded-full font-semibold cursor-pointer">
-                  Publish your first Image
+              {searchQuery ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setSearchQuery("")}
+                  className="rounded-full cursor-pointer"
+                >
+                  Show all images
                 </Button>
-              </Link>
+              ) : (
+                <Link href="/upload" prefetch>
+                  <Button size="lg" className="rounded-full font-semibold cursor-pointer">
+                    Publish your first Image
+                  </Button>
+                </Link>
+              )}
             </div>
           )}
         </div>
@@ -194,10 +256,11 @@ export default function GalleryPage() {
         <DialogContent className="max-w-4xl w-[95vw] bg-background/95 backdrop-blur-sm border-none p-0 overflow-hidden">
           <div className="relative w-full h-[80vh] flex items-center justify-center bg-black/5">
             {selectedImage && (
-              <img
+              <Image
                 src={selectedImage.signedUrl as string}
                 alt={selectedImage.name}
-                className="max-w-full max-h-full object-contain"
+                fill
+                className="object-contain"
               />
             )}
           </div>
@@ -213,7 +276,7 @@ export default function GalleryPage() {
                 onClick={() => {
                   if (selectedImage?.signedUrl) {
                     navigator.clipboard.writeText(selectedImage.signedUrl as string);
-                    toast.success("Link copied to clipboard");
+                    toast.success("Link copied to clipboard - the link expires after 30 days");
                   }
                 }}
               >
@@ -242,7 +305,7 @@ export default function GalleryPage() {
           <DialogHeader>
             <DialogTitle>Delete Image</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{deletingImage?.name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{deletingImage?.name}&quot;? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-3 mt-4">
@@ -283,10 +346,10 @@ function GalleryImage({
   onDelete,
   onClick,
 }: {
-  img: Image;
+  img: GalleryImage;
   onDownload: (url: string, path: string) => void;
   onToggle: (path: string) => void;
-  onDelete: (img: Image) => void;
+  onDelete: (img: GalleryImage) => void;
   onClick: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -304,15 +367,18 @@ function GalleryImage({
     >
       {isLoading && <Skeleton className="w-full h-full absolute inset-0 z-10" />}
 
-      <img
+      <Image
         src={img.signedUrl as string}
         alt={img.name || "Gallery Image"}
+        width={500}
+        height={500}
         className={cn(
           "w-full h-auto object-cover transition-transform duration-500 ease-in-out",
           isLoading ? "opacity-0" : "opacity-100",
           isHovered && "scale-105"
         )}
         onLoad={() => setIsLoading(false)}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
       />
 
       {/* Overlay Gradient */}
@@ -346,15 +412,9 @@ function GalleryImage({
         </div>
 
         <div className="flex justify-between items-end">
-          <a
-            href={img.signedUrl as string}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white font-medium truncate max-w-[150px] hover:underline cursor-pointer"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <span className="text-white font-medium truncate max-w-[150px]">
             {truncateFileName(img.name)}
-          </a>
+          </span>
 
           <div className="flex gap-2">
             <Tooltip>

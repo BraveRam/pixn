@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { generateImageDescription, generateEmbedding } from "@/lib/ai";
 
 const MAX_IMAGES_PER_USER = 20;
 
@@ -48,6 +49,7 @@ export async function POST(request: NextRequest) {
         }
 
         const uploadedImages = [];
+        const embeddingsToInsert = [];
 
         for (const file of files) {
             const filePath = `${user.id}/${Date.now()}-${file.name}`;
@@ -58,6 +60,30 @@ export async function POST(request: NextRequest) {
             if (error) {
                 console.error("Upload error:", error);
                 return NextResponse.json({ error: error.message }, { status: 400 });
+            }
+
+            // Generate AI metadata
+            try {
+                const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+                    .from("images")
+                    .createSignedUrl(filePath, 60 * 5);
+
+                if (!signedUrlError && signedUrlData?.signedUrl) {
+                    const description = await generateImageDescription(signedUrlData.signedUrl);
+                    const embedding = await generateEmbedding(description);
+
+                    embeddingsToInsert.push({
+                        path: filePath,
+                        user_id: user.id,
+                        content: description,
+                        embedding: embedding,
+                    });
+                } else {
+                    console.error("Failed to generate signed URL for AI processing:", signedUrlError);
+                }
+            } catch (aiError) {
+                console.error("AI processing failed for image:", file.name, aiError);
+                // Continue with upload even if AI fails
             }
 
             uploadedImages.push({
@@ -73,6 +99,15 @@ export async function POST(request: NextRequest) {
             if (error) {
                 console.error("Database insert error:", error);
                 return NextResponse.json({ error: error.message }, { status: 400 });
+            }
+
+            // Insert embeddings
+            if (embeddingsToInsert.length > 0) {
+                const { error: embeddingError } = await supabase.from("embeddings").insert(embeddingsToInsert);
+                if (embeddingError) {
+                    console.error("Failed to insert embeddings:", embeddingError);
+                    // We don't fail the request here as the images are already uploaded and in gallery
+                }
             }
         }
 

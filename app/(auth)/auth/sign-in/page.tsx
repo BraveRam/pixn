@@ -16,15 +16,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ArrowRight, Mail, Sparkles } from "lucide-react";
+import { ArrowRight, Mail, Sparkles, Shield, Zap, Heart, Lock, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
 
 const LoginPage = () => {
+  const [activeFeature, setActiveFeature] = useState(0);
   const supabase = createClient();
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
@@ -32,6 +35,19 @@ const LoginPage = () => {
     },
     resolver: zodResolver(formSchema),
   });
+
+  const features = [
+    { icon: Shield, text: "Enterprise-grade security" },
+    { icon: Zap, text: "Lightning-fast AI search" },
+    { icon: Heart, text: "Free forever" },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % features.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [features.length]);
 
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -70,24 +86,27 @@ const LoginPage = () => {
       form.reset();
     } catch (error) {
       toast.error("An error occurred while signing in - try again later.");
-      console.error(error);
     }
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 relative overflow-hidden bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10">
-      {/* Animated background - shared across both sides */}
+    <div className="min-h-screen grid lg:grid-cols-2 relative overflow-hidden bg-background">
+      {/* Animated background */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute top-2/3 left-2/3 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/30 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
+        <div className="absolute top-2/3 left-1/3 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
       </div>
 
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex flex-col justify-between p-12 relative">{/* Removed duplicate background classes */}
-
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="hidden lg:flex flex-col justify-between p-12 relative"
+      >
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10">
+          <div className="relative w-10 h-10 group-hover:scale-110 transition-transform">
             <Image
               src="/logo.png"
               alt="Pixn"
@@ -98,43 +117,111 @@ const LoginPage = () => {
           <span className="text-2xl font-bold">Pixn</span>
         </Link>
 
-        <div className="space-y-6 max-w-md">
-          <div className="space-y-2">
-            <div className="inline-block p-2 rounded-xl bg-primary/10 mb-4">
-              <Sparkles className="w-8 h-8 text-primary" />
-            </div>
-            <h2 className="text-4xl font-bold leading-tight">
-              Welcome back to your creative space
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Sign in to access your beautiful image gallery and continue showcasing your best work.
-            </p>
+        <div className="space-y-8 max-w-md">
+          <div className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
+            >
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">Your personal gallery</span>
+            </motion.div>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-5xl font-bold leading-tight"
+            >
+              Store & Search
+              <br />
+              <span className="bg-gradient-to-r from-primary via-purple-500 to-blue-500 bg-clip-text text-transparent">
+                Your Memories
+              </span>
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg text-muted-foreground"
+            >
+              Secure, AI-powered image gallery that makes finding and organizing your photos effortless.
+            </motion.p>
           </div>
 
-          <div className="pt-6 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="space-y-4"
+          >
+            <AnimatePresence mode="wait">
+              {features.map((feature, i) => (
+                i === activeFeature && (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-card/50 backdrop-blur border border-border"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <feature.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">{feature.text}</span>
+                  </motion.div>
+                )
+              ))}
+            </AnimatePresence>
+
+            <div className="flex gap-1.5 pt-2">
+              {features.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1 rounded-full transition-all duration-300 ${i === activeFeature ? "w-12 bg-primary" : "w-8 bg-primary/30"
+                    }`}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="space-y-3 pt-6 border-t border-border"
+          >
             {[
-              "Securely store your images",
-              "Organize with favorites",
-              "Access anytime, anywhere",
-            ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
+              "No credit card required",
+              "Free forever",
+              "Your data stays private",
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Check className="w-3 h-3 text-primary" />
                 </div>
-                <span className="text-sm text-muted-foreground">{feature}</span>
+                <span className="text-sm text-muted-foreground">{item}</span>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         <p className="text-sm text-muted-foreground">
           © 2025 Pixn. All rights reserved.
         </p>
-      </div>
+      </motion.div>
 
       {/* Right Side - Sign In Form */}
       <div className="flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-md space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="w-full max-w-md space-y-8"
+        >
           {/* Mobile Logo */}
           <Link href="/" className="flex lg:hidden items-center gap-3 justify-center">
             <div className="relative w-10 h-10">
@@ -149,9 +236,9 @@ const LoginPage = () => {
           </Link>
 
           <div className="space-y-2 text-center lg:text-left">
-            <h1 className="text-3xl font-bold tracking-tight">Sign in to Pixn</h1>
+            <h1 className="text-4xl font-bold tracking-tight">Welcome back</h1>
             <p className="text-muted-foreground">
-              Choose your preferred sign-in method
+              Sign in to access your gallery
             </p>
           </div>
 
@@ -160,16 +247,17 @@ const LoginPage = () => {
               onClick={signInWithGoogle}
               variant="outline"
               size="lg"
-              className="w-full gap-3 py-6 text-base font-medium group hover:bg-secondary transition-all"
+              className="w-full gap-3 py-6 text-base font-medium group hover:bg-secondary hover:border-primary/50 transition-all relative overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               <GoogleLogo />
-              Continue with Google
-              <ArrowRight className="ml-auto w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <span className="relative z-10">Continue with Google</span>
+              <ArrowRight className="ml-auto w-4 h-4 group-hover:translate-x-1 transition-transform relative z-10" />
             </Button>
 
             <div className="relative flex items-center gap-3">
               <Separator className="flex-1" />
-              <span className="text-xs text-muted-foreground px-2 bg-background">OR</span>
+              <span className="text-xs text-muted-foreground px-2">OR</span>
               <Separator className="flex-1" />
             </div>
 
@@ -185,12 +273,12 @@ const LoginPage = () => {
                     <FormItem>
                       <FormLabel className="text-sm font-medium">Email address</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                        <div className="relative group">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                           <Input
                             type="email"
                             placeholder="you@example.com"
-                            className="pl-11 py-6 text-base"
+                            className="pl-11 py-6 text-base bg-secondary/30 border-transparent focus-visible:bg-background focus-visible:border-primary/50 transition-all"
                             {...field}
                           />
                         </div>
@@ -202,44 +290,56 @@ const LoginPage = () => {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full py-6 text-base font-medium group"
+                  className="w-full py-6 text-base font-medium group relative overflow-hidden"
                   disabled={form.formState.isSubmitting}
                 >
-                  {form.formState.isSubmitting ? (
-                    "Sending magic link..."
-                  ) : (
-                    <>
-                      Continue with Email
-                      <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
+                  <span className="relative z-10 flex items-center gap-2">
+                    {form.formState.isSubmitting ? (
+                      "Sending magic link..."
+                    ) : (
+                      <>
+                        Continue with Email
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Button>
               </form>
             </Form>
           </div>
 
-          <div className="text-center text-sm text-muted-foreground pt-6 border-t">
-            <p>
-              By signing in, you agree to our{" "}
-              <Link href="/terms" className="underline hover:text-foreground transition-colors">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="underline hover:text-foreground transition-colors">
-                Privacy Policy
-              </Link>
-            </p>
-          </div>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 justify-center lg:justify-start p-3 rounded-lg bg-card/50 border border-border">
+              <Lock className="w-4 h-4 text-primary" />
+              <span className="text-sm text-muted-foreground">
+                Your data is encrypted and secure
+              </span>
+            </div>
 
-          <div className="text-center text-sm">
-            <p className="text-muted-foreground">
-              Don't have an account?{" "}
-              <Link href="/auth/sign-in" className="text-primary hover:underline font-medium">
-                Sign up is automatic
-              </Link>
-            </p>
+            <div className="text-center text-sm text-muted-foreground pt-4">
+              <p>
+                By signing in, you agree to our{" "}
+                <Link href="/terms" className="underline hover:text-foreground transition-colors">
+                  Terms
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="underline hover:text-foreground transition-colors">
+                  Privacy Policy
+                </Link>
+              </p>
+            </div>
+
+            <div className="text-center text-sm lg:hidden">
+              <p className="text-muted-foreground">
+                Don&apos;t have an account?{" "}
+                <span className="text-foreground font-medium">
+                  Sign up is automatic
+                </span>
+              </p>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

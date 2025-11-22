@@ -90,3 +90,21 @@ export const fetchFavoriteImages = async (): Promise<Image[]> => {
     // Filter out images without signed URLs
     return signedImages.filter((img) => img.signedUrl);
 };
+
+// Search images using semantic search
+export const searchImages = async (query: string): Promise<Image[]> => {
+    const response = await fetch("/api/gallery/search", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to search images");
+    }
+
+    const data = await response.json();
+    return data.results || [];
+};

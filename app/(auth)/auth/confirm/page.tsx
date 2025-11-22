@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Loader } from "lucide-react";
@@ -84,15 +84,8 @@ export default function ConfirmPage() {
           <Loader className="w-10 h-10 animate-spin" />
         </>
       ) : (
-        <p className="text-center text-gray-600 font-extrabold">
-          If you're not redirected,{" "}
-          <button
-            onClick={() => router.push("/auth/sign-in")}
-            className="underline text-blue-600 font-extrabold hover:text-blue-800"
-          >
-            click here to sign in again
-          </button>
-          .
+        <p className="text-muted-foreground">
+          You&apos;re all set! You can now access your account.
         </p>
       )}
     </div>

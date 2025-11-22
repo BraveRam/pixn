@@ -4,12 +4,7 @@ import { Shield } from "lucide-react";
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-primary/10 via-purple-500/10 to-blue-500/10">
-            {/* Animated background */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-            </div>
+        <div className="min-h-screen bg-background">
 
             <div className="container mx-auto px-4 py-12 max-w-4xl">
                 <Link href="/auth/sign-in" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors">
@@ -59,9 +54,16 @@ export default function PrivacyPolicyPage() {
                     </section>
 
                     <section className="space-y-3">
+                        <h2 className="text-2xl font-semibold">AI-Powered Features</h2>
+                        <p className="text-muted-foreground leading-relaxed">
+                            We use artificial intelligence (AI) technology to analyze your uploaded images and generate descriptions for search functionality. This processing helps you find your images more easily through natural language search. The AI-generated descriptions are stored alongside your images but are only used to enhance your search experience. No AI-generated content is shared with third parties.
+                        </p>
+                    </section>
+
+                    <section className="space-y-3">
                         <h2 className="text-2xl font-semibold">Data Storage and Security</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            Your images are stored securely using Supabase infrastructure with industry-standard encryption. We implement appropriate security measures to protect against unauthorized access, alteration, or disclosure of your data. However, no method of transmission over the internet is 100% secure.
+                            Your images are stored securely using cloud infrastructure with industry-standard encryption. We implement appropriate security measures to protect against unauthorized access, alteration, or disclosure of your data. However, no method of transmission over the internet is 100% secure.
                         </p>
                     </section>
 
@@ -78,7 +80,7 @@ export default function PrivacyPolicyPage() {
                     <section className="space-y-3">
                         <h2 className="text-2xl font-semibold">Third-Party Services</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            We use Supabase for data storage and authentication, and Google OAuth for sign-in services. These services have their own privacy policies governing the use of your information.
+                            We use secure cloud services for data storage and authentication, and Google OAuth for sign-in services. These services have their own privacy policies governing the use of your information.
                         </p>
                     </section>
 

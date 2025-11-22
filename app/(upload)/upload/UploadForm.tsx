@@ -10,10 +10,8 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -85,9 +83,9 @@ export default function FileUploadFormDemo() {
 
       router.push("/gallery");
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.error || "An error occurred while uploading the image");
-      console.error(error);
+    onError: (error: unknown) => {
+      const errorMessage = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || "An error occurred while uploading the image";
+      toast.error(errorMessage);
     },
   });
 
