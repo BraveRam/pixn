@@ -25,7 +25,11 @@ const fadeIn = {
   visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.15, duration: 0.6, ease: [0.4, 0, 0.2, 1] as const },
+    transition: {
+      delay: i * 0.15,
+      duration: 0.6,
+      ease: [0.4, 0, 0.2, 1] as const,
+    },
   }),
 };
 
@@ -60,13 +64,22 @@ export default function LandingPage() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
-    <main ref={containerRef} className="relative min-h-screen overflow-hidden bg-background">
+    <main
+      ref={containerRef}
+      className="relative min-h-screen overflow-hidden bg-background"
+    >
       {/* Animated background */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <motion.div style={{ y, opacity }} className="absolute inset-0">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/30 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-          <div className="absolute top-2/3 left-2/3 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+          <div
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/30 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
+          <div
+            className="absolute top-2/3 left-2/3 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/30 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "2s" }}
+          />
         </motion.div>
         <div className="absolute inset-0 bg-grid-slate-100/[0.03] dark:bg-grid-slate-100/[0.02] bg-[size:60px_60px]" />
       </div>
@@ -81,7 +94,9 @@ export default function LandingPage() {
             className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-sm"
           >
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">Free forever · AI-powered search</span>
+            <span className="text-sm font-medium">
+              Free forever · AI-powered search
+            </span>
           </motion.div>
 
           <motion.h1
@@ -105,8 +120,9 @@ export default function LandingPage() {
             variants={fadeIn}
             className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl leading-relaxed"
           >
-            Store, organize, and search your favorite images with AI-powered intelligence.
-            Your personal gallery, beautifully designed and completely free.
+            Store, organize, and search your favorite images with AI-powered
+            intelligence. Your personal gallery, beautifully designed and
+            completely free.
           </motion.p>
 
           <motion.div
@@ -117,7 +133,10 @@ export default function LandingPage() {
             className="flex flex-col sm:flex-row items-center gap-4"
           >
             <Link href="/auth/sign-in">
-              <Button size="lg" className="rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all group relative overflow-hidden">
+              <Button
+                size="lg"
+                className="rounded-full px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all group relative overflow-hidden"
+              >
                 <span className="relative z-10 flex items-center gap-2">
                   Get Started Free
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -126,7 +145,11 @@ export default function LandingPage() {
               </Button>
             </Link>
             <Link href="#features">
-              <Button size="lg" variant="outline" className="rounded-full px-8 py-6 text-lg font-semibold backdrop-blur-sm">
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-full px-8 py-6 text-lg font-semibold backdrop-blur-sm"
+              >
                 Learn More
               </Button>
             </Link>
@@ -165,10 +188,16 @@ export default function LandingPage() {
           className="max-w-6xl mx-auto"
         >
           <div className="text-center mb-16">
-            <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold mb-4">
+            <motion.h2
+              variants={fadeIn}
+              className="text-4xl md:text-5xl font-bold mb-4"
+            >
               Simple. Powerful. Free.
             </motion.h2>
-            <motion.p variants={fadeIn} className="text-xl text-muted-foreground">
+            <motion.p
+              variants={fadeIn}
+              className="text-xl text-muted-foreground"
+            >
               Get started in seconds with our intuitive workflow
             </motion.p>
           </div>
@@ -179,21 +208,24 @@ export default function LandingPage() {
                 step: "01",
                 icon: <Upload className="w-8 h-8" />,
                 title: "Upload",
-                description: "Drag and drop up to 3 images at once, max 5MB each",
+                description:
+                  "Drag and drop up to 3 images at once, max 5MB each",
                 color: "from-blue-500 to-cyan-500",
               },
               {
                 step: "02",
                 icon: <Sparkles className="w-8 h-8" />,
                 title: "AI Processes",
-                description: "Our AI automatically generates searchable descriptions",
+                description:
+                  "Our AI automatically generates searchable descriptions",
                 color: "from-purple-500 to-pink-500",
               },
               {
                 step: "03",
                 icon: <Search className="w-8 h-8" />,
                 title: "Find Instantly",
-                description: "Search your images using natural language queries",
+                description:
+                  "Search your images using natural language queries",
                 color: "from-orange-500 to-red-500",
               },
               {
@@ -206,11 +238,13 @@ export default function LandingPage() {
             ].map((step, i) => (
               <motion.div key={i} variants={fadeIn} className="relative">
                 <Card className="p-6 h-full border-border bg-card/50 backdrop-blur hover:bg-card/80 transition-all duration-300 group">
-                  <div className="text-6xl font-bold text-muted-foreground/20 mb-4">{step.step}</div>
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
-                    <div className="text-white">
-                      {step.icon}
-                    </div>
+                  <div className="text-6xl font-bold text-muted-foreground/20 mb-4">
+                    {step.step}
+                  </div>
+                  <div
+                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}
+                  >
+                    <div className="text-white">{step.icon}</div>
                   </div>
                   <h3 className="text-xl font-bold mb-2">{step.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">
@@ -239,28 +273,24 @@ export default function LandingPage() {
             {
               icon: <ImagePlus className="w-8 h-8" />,
               title: "Effortless Uploads",
-              description: "Upload images with our intuitive drag-and-drop interface. Your personal gallery, always ready.",
+              description:
+                "Upload images with our intuitive drag-and-drop interface. Your personal gallery, always ready.",
               gradient: "from-blue-500 to-cyan-500",
             },
             {
               icon: <Search className="w-8 h-8" />,
               title: "AI-Powered Search",
-              description: "Find any image instantly with natural language search. Our AI understands your photos better than traditional tags.",
+              description:
+                "Find any image instantly with natural language search. Our AI understands your photos better than traditional tags.",
               gradient: "from-purple-500 to-pink-500",
-            },
-            {
-              icon: <Lock className="w-8 h-8" />,
-              title: "Private & Secure",
-              description: "Your images are encrypted and protected with Supabase infrastructure. Only you have access to your gallery.",
-              gradient: "from-orange-500 to-red-500",
             },
           ].map((feature, i) => (
             <motion.div key={i} custom={i} variants={fadeIn}>
               <Card className="p-8 h-full border-border bg-card/50 backdrop-blur hover:bg-card/80 hover:border-primary/50 transition-all duration-300 hover:shadow-xl group cursor-pointer">
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
-                  <div className="text-white">
-                    {feature.icon}
-                  </div>
+                <div
+                  className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}
+                >
+                  <div className="text-white">{feature.icon}</div>
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -287,11 +317,18 @@ export default function LandingPage() {
               { value: "Secure", label: "Storage", suffix: "" },
               { value: "∞", label: "Always Free", suffix: "" },
             ].map((stat, i) => (
-              <motion.div key={i} custom={i} variants={fadeIn} className="group">
+              <motion.div
+                key={i}
+                custom={i}
+                variants={fadeIn}
+                className="group"
+              >
                 <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform">
                   {stat.value}
                 </div>
-                <div className="text-sm md:text-base text-muted-foreground">{stat.label}</div>
+                <div className="text-sm md:text-base text-muted-foreground">
+                  {stat.label}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -315,10 +352,14 @@ export default function LandingPage() {
                 Start Your Gallery Today
               </h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join creators who trust Pixn to showcase their best work. No credit card required.
+                Join creators who trust Pixn to showcase their best work. No
+                credit card required.
               </p>
               <Link href="/auth/sign-in">
-                <Button size="lg" className="rounded-full px-12 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all group relative overflow-hidden">
+                <Button
+                  size="lg"
+                  className="rounded-full px-12 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all group relative overflow-hidden"
+                >
                   <span className="relative z-10 flex items-center gap-2">
                     Create Free Account
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -348,24 +389,50 @@ export default function LandingPage() {
                 <span className="font-bold text-xl">Pixn</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-sm">
-                Your personal image gallery, powered by AI. Store, organize, and search your memories effortlessly.
+                Your personal image gallery, powered by AI. Store, organize, and
+                search your memories effortlessly.
               </p>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <Link href="/auth/sign-in" className="block hover:text-foreground transition-colors">Gallery</Link>
-                <Link href="/upload" className="block hover:text-foreground transition-colors">Upload</Link>
-                <Link href="/#features" className="block hover:text-foreground transition-colors">Features</Link>
+                <Link
+                  href="/auth/sign-in"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  Gallery
+                </Link>
+                <Link
+                  href="/upload"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  Upload
+                </Link>
+                <Link
+                  href="/#features"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  Features
+                </Link>
               </div>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Legal</h3>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <Link href="/terms" className="block hover:text-foreground transition-colors">Terms</Link>
-                <Link href="/privacy" className="block hover:text-foreground transition-colors">Privacy</Link>
+                <Link
+                  href="/terms"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  Terms
+                </Link>
+                <Link
+                  href="/privacy"
+                  className="block hover:text-foreground transition-colors"
+                >
+                  Privacy
+                </Link>
               </div>
             </div>
           </div>

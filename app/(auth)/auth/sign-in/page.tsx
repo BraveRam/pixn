@@ -16,7 +16,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ArrowRight, Mail, Sparkles, Shield, Zap, Heart, Lock, Check } from "lucide-react";
+import {
+  ArrowRight,
+  Mail,
+  Sparkles,
+  Shield,
+  Zap,
+  Heart,
+  Lock,
+  Check,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,8 +103,14 @@ const LoginPage = () => {
       {/* Animated background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute top-2/3 left-1/3 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/30 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+        <div
+          className="absolute top-2/3 left-1/3 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/30 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        />
       </div>
 
       {/* Left Side - Branding */}
@@ -107,12 +122,7 @@ const LoginPage = () => {
       >
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-10 h-10 group-hover:scale-110 transition-transform">
-            <Image
-              src="/logo.png"
-              alt="Pixn"
-              fill
-              className="object-contain"
-            />
+            <Image src="/logo.png" alt="Pixn" fill className="object-contain" />
           </div>
           <span className="text-2xl font-bold">Pixn</span>
         </Link>
@@ -148,7 +158,8 @@ const LoginPage = () => {
               transition={{ delay: 0.4 }}
               className="text-lg text-muted-foreground"
             >
-              Secure, AI-powered image gallery that makes finding and organizing your photos effortless.
+              Secure, AI-powered image gallery that makes finding and organizing
+              your photos effortless.
             </motion.p>
           </div>
 
@@ -159,30 +170,36 @@ const LoginPage = () => {
             className="space-y-4"
           >
             <AnimatePresence mode="wait">
-              {features.map((feature, i) => (
-                i === activeFeature && (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-card/50 backdrop-blur border border-border"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <feature.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium">{feature.text}</span>
-                  </motion.div>
-                )
-              ))}
+              {features.map(
+                (feature, i) =>
+                  i === activeFeature && (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      className="flex items-center gap-3 p-4 rounded-xl bg-card/50 backdrop-blur border border-border"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <feature.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium">
+                        {feature.text}
+                      </span>
+                    </motion.div>
+                  )
+              )}
             </AnimatePresence>
 
             <div className="flex gap-1.5 pt-2">
               {features.map((_, i) => (
                 <div
                   key={i}
-                  className={`h-1 rounded-full transition-all duration-300 ${i === activeFeature ? "w-12 bg-primary" : "w-8 bg-primary/30"
-                    }`}
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    i === activeFeature
+                      ? "w-12 bg-primary"
+                      : "w-8 bg-primary/30"
+                  }`}
                 />
               ))}
             </div>
@@ -223,7 +240,10 @@ const LoginPage = () => {
           className="w-full max-w-md space-y-8"
         >
           {/* Mobile Logo */}
-          <Link href="/" className="flex lg:hidden items-center gap-3 justify-center">
+          <Link
+            href="/"
+            className="flex lg:hidden items-center gap-3 justify-center"
+          >
             <div className="relative w-10 h-10">
               <Image
                 src="/logo.png"
@@ -271,7 +291,9 @@ const LoginPage = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Email address</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Email address
+                      </FormLabel>
                       <FormControl>
                         <div className="relative group">
                           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -310,21 +332,20 @@ const LoginPage = () => {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center gap-2 justify-center lg:justify-start p-3 rounded-lg bg-card/50 border border-border">
-              <Lock className="w-4 h-4 text-primary" />
-              <span className="text-sm text-muted-foreground">
-                Your data is encrypted and secure
-              </span>
-            </div>
-
             <div className="text-center text-sm text-muted-foreground pt-4">
               <p>
                 By signing in, you agree to our{" "}
-                <Link href="/terms" className="underline hover:text-foreground transition-colors">
+                <Link
+                  href="/terms"
+                  className="underline hover:text-foreground transition-colors"
+                >
                   Terms
                 </Link>{" "}
                 and{" "}
-                <Link href="/privacy" className="underline hover:text-foreground transition-colors">
+                <Link
+                  href="/privacy"
+                  className="underline hover:text-foreground transition-colors"
+                >
                   Privacy Policy
                 </Link>
               </p>
