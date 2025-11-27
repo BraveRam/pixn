@@ -135,7 +135,6 @@ const LoginPage = () => {
               transition={{ delay: 0.2 }}
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20"
             >
-              <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">Your personal gallery</span>
             </motion.div>
 
@@ -147,7 +146,7 @@ const LoginPage = () => {
             >
               Store & Search
               <br />
-              <span className="bg-gradient-to-r from-primary via-purple-500 to-blue-500 bg-clip-text text-transparent">
+              <span className="text-red-500">
                 Your Memories
               </span>
             </motion.h2>
@@ -195,11 +194,10 @@ const LoginPage = () => {
               {features.map((_, i) => (
                 <div
                   key={i}
-                  className={`h-1 rounded-full transition-all duration-300 ${
-                    i === activeFeature
-                      ? "w-12 bg-primary"
-                      : "w-8 bg-primary/30"
-                  }`}
+                  className={`h-1 rounded-full transition-all duration-300 ${i === activeFeature
+                    ? "w-12 bg-primary"
+                    : "w-8 bg-primary/30"
+                    }`}
                 />
               ))}
             </div>
