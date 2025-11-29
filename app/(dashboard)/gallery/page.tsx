@@ -186,7 +186,7 @@ export default function GalleryPage() {
           {/* Header to ensure "Gallery" text is visible if user expects it, or just spacing */}
           <div className="flex flex-col items-center mb-8 space-y-4">
             <h1 className="text-4xl font-extrabold tracking-tight text-center">Gallery</h1>
-            <SearchInput onSearch={handleSearch} placeholder="Search your memories..." currentQuery={searchQuery} />
+            <SearchInput onSearch={handleSearch} placeholder="A boy in college..." currentQuery={searchQuery} />
           </div>
 
           {isLoading ? (
