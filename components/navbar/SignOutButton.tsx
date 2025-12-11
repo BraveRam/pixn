@@ -36,7 +36,7 @@ export default function SignOutButton() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant={"destructive"}>
+                <Button className="cursor-pointer" variant={"destructive"}>
                     Sign Out
                 </Button>
             </DialogTrigger>
@@ -49,9 +49,9 @@ export default function SignOutButton() {
                 </DialogHeader>
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
+                        <Button className="cursor-pointer" variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button variant="destructive" onClick={handleSignOut}>
+                    <Button className="cursor-pointer" variant="destructive" onClick={handleSignOut}>
                         Sign Out
                     </Button>
                 </DialogFooter>

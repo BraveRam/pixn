@@ -80,9 +80,7 @@ export default async function Navbar() {
 
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="cursor-pointer">
-                          <SignOutButton />
-                        </div>
+                        <SignOutButton />
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Sign out</p>

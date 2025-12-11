@@ -39,18 +39,33 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // if (
-  //   !user &&
-  //   !request.nextUrl.pathname.startsWith("/sign-in") &&
-  //   !request.nextUrl.pathname.startsWith("/auth") &&
-  //   !request.nextUrl.pathname.startsWith("/dashboard") &&
-  //   !request.nextUrl.pathname.startsWith("/")
-  // ) {
-  //   // no user, potentially respond by redirecting the user to the login page
-  //   const url = request.nextUrl.clone();
-  //   url.pathname = "/auth/sign-in";
-  //   return NextResponse.redirect(url);
-  // }
+  // Define public paths that don't require authentication
+  const publicPaths = [
+    "/",
+    "/auth",
+    "/privacy",
+    "/terms",
+    "/api",
+  ];
+
+  // Check if the current path is public
+  const isPublicPath = publicPaths.some((path) =>
+    request.nextUrl.pathname === path || request.nextUrl.pathname.startsWith(`${path}/`)
+  );
+
+  // Redirect authenticated users away from auth pages to gallery
+  if (user && request.nextUrl.pathname.startsWith("/auth")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/gallery";
+    return NextResponse.redirect(url);
+  }
+
+  // Redirect to sign-in if user is not authenticated and trying to access a protected route
+  if (!user && !isPublicPath) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/sign-in";
+    return NextResponse.redirect(url);
+  }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:

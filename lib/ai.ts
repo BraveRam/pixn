@@ -4,7 +4,7 @@ import z from 'zod';
 
 // Use the API key from environment or fallback to the one in the example (for now)
 // ideally this should be in process.env
-const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || "AIzaSyCrXVBS92t8rKNdCPjddJFz52T_QxQao68";
+const apiKey = process.env.GEMINI_API_KEY;
 
 const google = createGoogleGenerativeAI({
     apiKey,

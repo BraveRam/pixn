@@ -265,7 +265,7 @@ const LoginPage = () => {
               onClick={signInWithGoogle}
               variant="outline"
               size="lg"
-              className="w-full gap-3 py-6 text-base font-medium group hover:bg-secondary hover:border-primary/50 transition-all relative overflow-hidden"
+              className="cursor-pointer w-full gap-3 py-6 text-base font-medium group hover:bg-secondary hover:border-primary/50 transition-all relative overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               <GoogleLogo />
@@ -310,7 +310,7 @@ const LoginPage = () => {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full py-6 text-base font-medium group relative overflow-hidden"
+                  className="cursor-pointer w-full py-6 text-base font-medium group relative overflow-hidden"
                   disabled={form.formState.isSubmitting}
                 >
                   <span className="relative z-10 flex items-center gap-2">

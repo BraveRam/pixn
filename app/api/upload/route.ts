@@ -72,6 +72,9 @@ export async function POST(request: NextRequest) {
                     const description = await generateImageDescription(signedUrlData.signedUrl);
                     const embedding = await generateEmbedding(description);
 
+                    console.log("Description:", description);
+                    console.log("Embedding:", embedding);
+
                     embeddingsToInsert.push({
                         path: filePath,
                         user_id: user.id,

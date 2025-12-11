@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "Pixn",
   description: "A simple image gallery app powered by Supabase.",
   icons: {
-    icon: "/favicon.ico",
+    icon: '/favicon.ico',
   },
 };
 
