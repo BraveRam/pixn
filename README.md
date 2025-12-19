@@ -7,7 +7,7 @@ Your images, perfectly organized. **Pixn** is an AI-powered image gallery and se
 
 ## 🚀 Overview
 
-Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini 2.0 Flash model, Pixn automatically generates detailed descriptions for every image you upload. This enables **semantic search**, allowing you to find photos using natural language (e.g., "show me photos of sunset at the beach") instead of just filenames or tags.
+Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini model, Pixn automatically generates detailed descriptions for every image you upload. This enables **semantic search**, allowing you to find photos using natural language (e.g., "show me photos of sunset at the beach") instead of just filenames or tags.
 
 ## ✨ Key Features
 
@@ -22,7 +22,7 @@ Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini 2
 - **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Backend / Database**: [Supabase](https://supabase.com/) (PostgreSQL + Vector)
-- **AI Integration**: [AI SDK](https://sdk.vercel.ai/) with [Google Gemini 2.0 Flash](https://deepmind.google/technologies/gemini/)
+- **AI Integration**: [AI SDK](https://sdk.vercel.ai/) with [Google Gemini](https://deepmind.google/technologies/gemini/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 - **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
 - **Icons**: [Lucide React](https://lucide.dev/)
