@@ -33,7 +33,7 @@
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.10",
     "react": "19.1.2",
-    "react-dom": "19.1.0",
+    "react-dom": "19.1.2",
     "react-hook-form": "^7.61.1",
     "server-only": "^0.0.1",
     "sonner": "^2.0.6",
