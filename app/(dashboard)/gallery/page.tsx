@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Heart, Trash, Images, Loader2, Copy, Home } from "lucide-react";
+import {
+  Download,
+  Heart,
+  Trash,
+  Images,
+  Loader2,
+  Copy,
+  Home,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -25,32 +33,38 @@ import {
 } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { galleryApi } from "@/lib/api/gallery";
-import { galleryKeys, fetchGalleryImages, type Image as GalleryImage } from "@/lib/api/queries";
+import {
+  galleryKeys,
+  fetchGalleryImages,
+  type Image as GalleryImage,
+} from "@/lib/api/queries";
 
 export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [deletingImage, setDeletingImage] = useState<GalleryImage | null>(null);
   const queryClient = useQueryClient();
 
-  // Search state
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch images with caching
   const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
-    queryKey: searchQuery ? ["gallery", "search", searchQuery] : galleryKeys.all,
-    queryFn: () => searchQuery ? import("@/lib/api/queries").then(m => m.searchImages(searchQuery)) : fetchGalleryImages(),
+    queryKey: searchQuery
+      ? ["gallery", "search", searchQuery]
+      : galleryKeys.all,
+    queryFn: () =>
+      searchQuery
+        ? import("@/lib/api/queries").then((m) => m.searchImages(searchQuery))
+        : fetchGalleryImages(),
   });
 
   const deleteMutation = useMutation({
     mutationFn: galleryApi.deleteImage,
     onMutate: async (variables) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: galleryKeys.all });
 
-      // Snapshot previous value
-      const previousImages = queryClient.getQueryData<GalleryImage[]>(galleryKeys.all);
+      const previousImages = queryClient.getQueryData<GalleryImage[]>(
+        galleryKeys.all
+      );
 
-      // Optimistically remove image
       queryClient.setQueryData<GalleryImage[]>(galleryKeys.all, (old) =>
         old ? old.filter((img) => img.path !== variables.path) : []
       );
@@ -60,7 +74,6 @@ export default function GalleryPage() {
       return { previousImages };
     },
     onError: (error, variables, context) => {
-      // Rollback on error
       if (context?.previousImages) {
         queryClient.setQueryData(galleryKeys.all, context.previousImages);
       }
@@ -70,7 +83,6 @@ export default function GalleryPage() {
       toast.success("Image deleted");
     },
     onSettled: () => {
-      // Refetch to ensure sync
       queryClient.invalidateQueries({ queryKey: galleryKeys.all });
       queryClient.invalidateQueries({ queryKey: galleryKeys.favorites });
     },
@@ -79,39 +91,37 @@ export default function GalleryPage() {
   const toggleFavoriteMutation = useMutation({
     mutationFn: galleryApi.toggleFavorite,
     onMutate: async (variables) => {
-      // Get the current query key
       const currentQueryKey = searchQuery
         ? ["gallery", "search", searchQuery]
         : galleryKeys.all;
 
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: currentQueryKey });
       await queryClient.cancelQueries({ queryKey: galleryKeys.all });
 
-      // Snapshot previous values
-      const previousImages = queryClient.getQueryData<GalleryImage[]>(currentQueryKey);
-      const previousAllImages = queryClient.getQueryData<GalleryImage[]>(galleryKeys.all);
+      const previousImages =
+        queryClient.getQueryData<GalleryImage[]>(currentQueryKey);
+      const previousAllImages = queryClient.getQueryData<GalleryImage[]>(
+        galleryKeys.all
+      );
 
-      // Optimistically update the current view
       queryClient.setQueryData<GalleryImage[]>(currentQueryKey, (old) =>
         old
           ? old.map((img) =>
-            img.path === variables.path
-              ? { ...img, favorite: !img.favorite }
-              : img
-          )
-          : []
-      );
-
-      // Also update the main gallery cache if it exists
-      if (searchQuery) {
-        queryClient.setQueryData<GalleryImage[]>(galleryKeys.all, (old) =>
-          old
-            ? old.map((img) =>
               img.path === variables.path
                 ? { ...img, favorite: !img.favorite }
                 : img
             )
+          : []
+      );
+
+      if (searchQuery) {
+        queryClient.setQueryData<GalleryImage[]>(galleryKeys.all, (old) =>
+          old
+            ? old.map((img) =>
+                img.path === variables.path
+                  ? { ...img, favorite: !img.favorite }
+                  : img
+              )
             : []
         );
       }
@@ -119,24 +129,24 @@ export default function GalleryPage() {
       return { previousImages, previousAllImages, currentQueryKey };
     },
     onError: (error, variables, context) => {
-      // Rollback on error
       if (context?.previousImages) {
-        queryClient.setQueryData(context.currentQueryKey, context.previousImages);
+        queryClient.setQueryData(
+          context.currentQueryKey,
+          context.previousImages
+        );
       }
       if (context?.previousAllImages) {
         queryClient.setQueryData(galleryKeys.all, context.previousAllImages);
       }
       toast.error("Failed to toggle favorite");
     },
-    onSuccess: () => {
-      // Silent success - no toast
-    },
     onSettled: () => {
-      // Refetch to ensure sync
       queryClient.invalidateQueries({ queryKey: galleryKeys.all });
       queryClient.invalidateQueries({ queryKey: galleryKeys.favorites });
       if (searchQuery) {
-        queryClient.invalidateQueries({ queryKey: ["gallery", "search", searchQuery] });
+        queryClient.invalidateQueries({
+          queryKey: ["gallery", "search", searchQuery],
+        });
       }
     },
   });
@@ -177,16 +187,19 @@ export default function GalleryPage() {
     setSearchQuery(query);
   };
 
-
-
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background pt-24 pb-10">
         <div className="container mx-auto px-4">
-          {/* Header to ensure "Gallery" text is visible if user expects it, or just spacing */}
           <div className="flex flex-col items-center mb-8 space-y-4">
-            <h1 className="text-4xl font-extrabold tracking-tight text-center">Gallery</h1>
-            <SearchInput onSearch={handleSearch} placeholder="A boy in college..." currentQuery={searchQuery} />
+            <h1 className="text-4xl font-extrabold tracking-tight text-center">
+              Gallery
+            </h1>
+            <SearchInput
+              onSearch={handleSearch}
+              placeholder="A boy in college..."
+              currentQuery={searchQuery}
+            />
           </div>
 
           {isLoading ? (
@@ -204,7 +217,9 @@ export default function GalleryPage() {
                   >
                     <Home className="w-5 h-5" />
                   </Button>
-                  <h2 className="text-2xl font-bold tracking-tight">Search results for &quot;{searchQuery}&quot;</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    Search results for &quot;{searchQuery}&quot;
+                  </h2>
                 </div>
               )}
               <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
@@ -227,9 +242,13 @@ export default function GalleryPage() {
                 <Images className="w-10 h-10 text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight">{searchQuery ? "No results found" : "No images yet"}</h2>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {searchQuery ? "No results found" : "No images yet"}
+                </h2>
                 <p className="text-muted-foreground max-w-sm mx-auto">
-                  {searchQuery ? "Try a different search term." : "Upload your first image to start building your collection."}
+                  {searchQuery
+                    ? "Try a different search term."
+                    : "Upload your first image to start building your collection."}
                 </p>
               </div>
               {searchQuery ? (
@@ -242,7 +261,10 @@ export default function GalleryPage() {
                 </Button>
               ) : (
                 <Link href="/upload" prefetch>
-                  <Button size="lg" className="rounded-full font-semibold cursor-pointer">
+                  <Button
+                    size="lg"
+                    className="rounded-full font-semibold cursor-pointer"
+                  >
                     Publish your first Image
                   </Button>
                 </Link>
@@ -252,7 +274,10 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={(open) => !open && setSelectedImage(null)}
+      >
         <DialogContent className="max-w-[800px] w-full bg-background/95 backdrop-blur-sm border-none p-0 overflow-hidden">
           <div className="relative w-full h-[600px] max-h-[60vh] flex items-center justify-center bg-black/5">
             {selectedImage && (
@@ -266,16 +291,24 @@ export default function GalleryPage() {
           </div>
           <div className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-background border-t gap-4">
             <div className="flex flex-col min-w-0 flex-1 w-full">
-              <DialogTitle className="font-semibold text-lg truncate">{truncateFileName(selectedImage?.name || "", 30)}</DialogTitle>
+              <DialogTitle className="font-semibold text-lg truncate">
+                {truncateFileName(selectedImage?.name || "", 30)}
+              </DialogTitle>
               <div className="flex flex-col gap-0.5">
-                <p className="text-sm text-muted-foreground">{formatSize(selectedImage?.size || 0)}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatSize(selectedImage?.size || 0)}
+                </p>
                 {selectedImage?.created_at && (
                   <p className="text-xs text-muted-foreground">
-                    Uploaded {new Date(selectedImage.created_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric"
-                    })}
+                    Uploaded{" "}
+                    {new Date(selectedImage.created_at).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      }
+                    )}
                   </p>
                 )}
               </div>
@@ -286,8 +319,12 @@ export default function GalleryPage() {
                 size="sm"
                 onClick={() => {
                   if (selectedImage?.signedUrl) {
-                    navigator.clipboard.writeText(selectedImage.signedUrl as string);
-                    toast.success("Link copied to clipboard - the link expires after 30 days");
+                    navigator.clipboard.writeText(
+                      selectedImage.signedUrl as string
+                    );
+                    toast.success(
+                      "Link copied to clipboard - the link expires after 30 days"
+                    );
                   }
                 }}
               >
@@ -299,7 +336,10 @@ export default function GalleryPage() {
                 size="sm"
                 onClick={() => {
                   if (selectedImage) {
-                    handleDownload(selectedImage.signedUrl as string, selectedImage.path);
+                    handleDownload(
+                      selectedImage.signedUrl as string,
+                      selectedImage.path
+                    );
                   }
                 }}
               >
@@ -311,12 +351,16 @@ export default function GalleryPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!deletingImage} onOpenChange={(open) => !open && setDeletingImage(null)}>
+      <Dialog
+        open={!!deletingImage}
+        onOpenChange={(open) => !open && setDeletingImage(null)}
+      >
         <DialogContent className="max-w-md w-[90vw] bg-background border-border">
           <DialogHeader>
             <DialogTitle>Delete Image</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{deletingImage?.name}&quot;? This action cannot be undone.
+              Are you sure you want to delete &quot;{deletingImage?.name}&quot;?
+              This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-3 mt-4">
@@ -370,13 +414,15 @@ function GalleryImage({
     <div
       className={cn(
         "relative group rounded-xl overflow-hidden bg-secondary/20 mb-4 cursor-pointer",
-        isLoading && "h-64" // Prevent collapse during loading
+        isLoading && "h-64"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
     >
-      {isLoading && <Skeleton className="w-full h-full absolute inset-0 z-10" />}
+      {isLoading && (
+        <Skeleton className="w-full h-full absolute inset-0 z-10" />
+      )}
 
       <Image
         src={img.signedUrl as string}
@@ -392,11 +438,12 @@ function GalleryImage({
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
       />
 
-      {/* Overlay Gradient */}
-      <div className={cn(
-        "absolute inset-0 bg-black/40 transition-opacity duration-300 flex flex-col justify-between p-4",
-        isHovered ? "opacity-100" : "opacity-0"
-      )}>
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/40 transition-opacity duration-300 flex flex-col justify-between p-4",
+          isHovered ? "opacity-100" : "opacity-0"
+        )}
+      >
         <div className="flex justify-end">
           <Tooltip>
             <TooltipTrigger asChild>

@@ -2,22 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  ArrowRight,
-  Github,
-  Image as ImageIcon,
-  Lock,
-  Search,
-  Sparkles,
-  Zap,
-  LayoutGrid,
-  Share2,
-  Command,
-} from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, Lock, Search, Zap, LayoutGrid } from "lucide-react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -30,16 +19,6 @@ const fadeIn = {
       ease: [0.215, 0.61, 0.355, 1] as const,
     },
   }),
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
 };
 
 export default function LandingPage() {
@@ -78,7 +57,6 @@ export default function LandingPage() {
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-6 overflow-hidden">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col items-center text-center">
-
             <motion.h1
               initial="hidden"
               animate="visible"
@@ -306,13 +284,15 @@ export default function LandingPage() {
             <span className="font-bold text-xl">Pixn</span>
           </div>
           <div className="flex gap-8 text-sm text-zinc-500">
-            <Link href="/privacy" className="hover:text-white transition-colors">
+            <Link
+              href="/privacy"
+              className="hover:text-white transition-colors"
+            >
               Privacy
             </Link>
             <Link href="/terms" className="hover:text-white transition-colors">
               Terms
             </Link>
-
           </div>
           <div className="text-zinc-600 text-sm">
             © 2025 Pixn. All rights reserved.

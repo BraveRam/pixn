@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Heart, Trash, BookHeart, Loader2, Copy, Home } from "lucide-react";
+import {
+  Download,
+  Heart,
+  Trash,
+  BookHeart,
+  Loader2,
+  Copy,
+  Home,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -25,24 +33,27 @@ import {
 } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { galleryApi } from "@/lib/api/gallery";
-import { galleryKeys, fetchFavoriteImages, type Image as GalleryImage } from "@/lib/api/queries";
+import {
+  galleryKeys,
+  fetchFavoriteImages,
+  type Image as GalleryImage,
+} from "@/lib/api/queries";
 
 export default function FavoritesPage() {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [deletingImage, setDeletingImage] = useState<GalleryImage | null>(null);
   const queryClient = useQueryClient();
 
-  // Search state
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch favorites with caching
   const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
-    queryKey: searchQuery ? ["gallery", "favorites", "search", searchQuery] : galleryKeys.favorites,
+    queryKey: searchQuery
+      ? ["gallery", "favorites", "search", searchQuery]
+      : galleryKeys.favorites,
     queryFn: async () => {
       if (searchQuery) {
         const { searchImages } = await import("@/lib/api/queries");
         const results = await searchImages(searchQuery);
-        // Filter for favorites on the client side as discussed in the plan
         return results.filter((img: GalleryImage) => img.favorite);
       }
       return fetchFavoriteImages();
@@ -52,13 +63,12 @@ export default function FavoritesPage() {
   const deleteMutation = useMutation({
     mutationFn: galleryApi.deleteImage,
     onMutate: async (variables) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: galleryKeys.favorites });
 
-      // Snapshot previous value
-      const previousImages = queryClient.getQueryData<GalleryImage[]>(galleryKeys.favorites);
+      const previousImages = queryClient.getQueryData<GalleryImage[]>(
+        galleryKeys.favorites
+      );
 
-      // Optimistically remove image
       queryClient.setQueryData<GalleryImage[]>(galleryKeys.favorites, (old) =>
         old ? old.filter((img) => img.path !== variables.path) : []
       );
@@ -68,7 +78,6 @@ export default function FavoritesPage() {
       return { previousImages };
     },
     onError: (error, variables, context) => {
-      // Rollback on error
       if (context?.previousImages) {
         queryClient.setQueryData(galleryKeys.favorites, context.previousImages);
       }
@@ -78,7 +87,6 @@ export default function FavoritesPage() {
       toast.success("Image deleted");
     },
     onSettled: () => {
-      // Refetch to ensure sync
       queryClient.invalidateQueries({ queryKey: galleryKeys.all });
       queryClient.invalidateQueries({ queryKey: galleryKeys.favorites });
     },
@@ -87,13 +95,12 @@ export default function FavoritesPage() {
   const toggleFavoriteMutation = useMutation({
     mutationFn: galleryApi.toggleFavorite,
     onMutate: async (variables) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: galleryKeys.favorites });
 
-      // Snapshot previous value
-      const previousImages = queryClient.getQueryData<GalleryImage[]>(galleryKeys.favorites);
+      const previousImages = queryClient.getQueryData<GalleryImage[]>(
+        galleryKeys.favorites
+      );
 
-      // Optimistically remove from favorites (since this is favorites page)
       queryClient.setQueryData<GalleryImage[]>(galleryKeys.favorites, (old) =>
         old ? old.filter((img) => img.path !== variables.path) : []
       );
@@ -107,11 +114,7 @@ export default function FavoritesPage() {
       }
       toast.error("Failed to toggle favorite");
     },
-    onSuccess: () => {
-      // Silent success - no toast
-    },
     onSettled: () => {
-      // Refetch to ensure sync
       queryClient.invalidateQueries({ queryKey: galleryKeys.all });
       queryClient.invalidateQueries({ queryKey: galleryKeys.favorites });
     },
@@ -154,15 +157,19 @@ export default function FavoritesPage() {
     setSearchQuery(query);
   };
 
-
-
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background pt-24 pb-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center mb-8 space-y-4">
-            <h1 className="text-4xl font-extrabold tracking-tight text-center">Favorites</h1>
-            <SearchInput onSearch={handleSearch} placeholder="Search your favorites..." currentQuery={searchQuery} />
+            <h1 className="text-4xl font-extrabold tracking-tight text-center">
+              Favorites
+            </h1>
+            <SearchInput
+              onSearch={handleSearch}
+              placeholder="Search your favorites..."
+              currentQuery={searchQuery}
+            />
           </div>
 
           {isLoading ? (
@@ -180,7 +187,9 @@ export default function FavoritesPage() {
                   >
                     <Home className="w-5 h-5" />
                   </Button>
-                  <h2 className="text-2xl font-bold tracking-tight">Search results for &quot;{searchQuery}&quot;</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    Search results for &quot;{searchQuery}&quot;
+                  </h2>
                 </div>
               )}
               <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
@@ -203,9 +212,13 @@ export default function FavoritesPage() {
                 <BookHeart className="w-10 h-10 text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight">{searchQuery ? "No favorites found" : "No favorites yet"}</h2>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {searchQuery ? "No favorites found" : "No favorites yet"}
+                </h2>
                 <p className="text-muted-foreground max-w-sm mx-auto">
-                  {searchQuery ? "Try a different search term." : "Mark images as favorites to see them here."}
+                  {searchQuery
+                    ? "Try a different search term."
+                    : "Mark images as favorites to see them here."}
                 </p>
               </div>
               {searchQuery ? (
@@ -218,7 +231,10 @@ export default function FavoritesPage() {
                 </Button>
               ) : (
                 <Link href="/gallery" prefetch>
-                  <Button size="lg" className="rounded-full font-semibold cursor-pointer">
+                  <Button
+                    size="lg"
+                    className="rounded-full font-semibold cursor-pointer"
+                  >
                     Browse Gallery
                   </Button>
                 </Link>
@@ -228,7 +244,10 @@ export default function FavoritesPage() {
         </div>
       </div>
 
-      <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={(open) => !open && setSelectedImage(null)}
+      >
         <DialogContent className="max-w-[800px] w-full bg-background/95 backdrop-blur-sm border-none p-0 overflow-hidden">
           <div className="relative w-full h-[600px] max-h-[60vh] flex items-center justify-center bg-black/5">
             {selectedImage && (
@@ -242,16 +261,24 @@ export default function FavoritesPage() {
           </div>
           <div className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-background border-t gap-4">
             <div className="flex flex-col min-w-0 flex-1 w-full">
-              <DialogTitle className="font-semibold text-lg truncate">{truncateFileName(selectedImage?.name || "", 30)}</DialogTitle>
+              <DialogTitle className="font-semibold text-lg truncate">
+                {truncateFileName(selectedImage?.name || "", 30)}
+              </DialogTitle>
               <div className="flex flex-col gap-0.5">
-                <p className="text-sm text-muted-foreground">{formatSize(selectedImage?.size || 0)}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatSize(selectedImage?.size || 0)}
+                </p>
                 {selectedImage?.created_at && (
                   <p className="text-xs text-muted-foreground">
-                    Uploaded {new Date(selectedImage.created_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric"
-                    })}
+                    Uploaded{" "}
+                    {new Date(selectedImage.created_at).toLocaleDateString(
+                      "en-US",
+                      {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      }
+                    )}
                   </p>
                 )}
               </div>
@@ -262,8 +289,12 @@ export default function FavoritesPage() {
                 size="sm"
                 onClick={() => {
                   if (selectedImage?.signedUrl) {
-                    navigator.clipboard.writeText(selectedImage.signedUrl as string);
-                    toast.success("Link copied to clipboard - the link expires after 30 days");
+                    navigator.clipboard.writeText(
+                      selectedImage.signedUrl as string
+                    );
+                    toast.success(
+                      "Link copied to clipboard - the link expires after 30 days"
+                    );
                   }
                 }}
               >
@@ -275,7 +306,10 @@ export default function FavoritesPage() {
                 size="sm"
                 onClick={() => {
                   if (selectedImage) {
-                    handleDownload(selectedImage.signedUrl as string, selectedImage.path);
+                    handleDownload(
+                      selectedImage.signedUrl as string,
+                      selectedImage.path
+                    );
                   }
                 }}
               >
@@ -287,12 +321,16 @@ export default function FavoritesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!deletingImage} onOpenChange={(open) => !open && setDeletingImage(null)}>
+      <Dialog
+        open={!!deletingImage}
+        onOpenChange={(open) => !open && setDeletingImage(null)}
+      >
         <DialogContent className="max-w-md w-[90vw] bg-background border-border">
           <DialogHeader>
             <DialogTitle>Delete Image</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{deletingImage?.name}&quot;? This action cannot be undone.
+              Are you sure you want to delete &quot;{deletingImage?.name}&quot;?
+              This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-3 mt-4">
@@ -346,13 +384,15 @@ function GalleryImage({
     <div
       className={cn(
         "relative group rounded-xl overflow-hidden bg-secondary/20 mb-4 cursor-pointer",
-        isLoading && "h-64" // Prevent collapse during loading
+        isLoading && "h-64"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
     >
-      {isLoading && <Skeleton className="w-full h-full absolute inset-0 z-10" />}
+      {isLoading && (
+        <Skeleton className="w-full h-full absolute inset-0 z-10" />
+      )}
 
       <Image
         src={img.signedUrl as string}
@@ -367,11 +407,12 @@ function GalleryImage({
         onLoad={() => setIsLoading(false)}
       />
 
-      {/* Overlay Gradient */}
-      <div className={cn(
-        "absolute inset-0 bg-black/40 transition-opacity duration-300 flex flex-col justify-between p-4",
-        isHovered ? "opacity-100" : "opacity-0"
-      )}>
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/40 transition-opacity duration-300 flex flex-col justify-between p-4",
+          isHovered ? "opacity-100" : "opacity-0"
+        )}
+      >
         <div className="flex justify-end">
           <Tooltip>
             <TooltipTrigger asChild>

@@ -77,34 +77,37 @@ export default function FileUploadFormDemo() {
       toast.success("Image uploaded successfully");
       form.reset();
 
-      // Refresh the count after successful upload
       const newCount = await checkImageLimit.getCurrentCount();
       setImageCount(newCount);
 
       router.push("/gallery");
     },
     onError: (error: unknown) => {
-      const errorMessage = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || "An error occurred while uploading the image";
+      const errorMessage =
+        (error as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error || "An error occurred while uploading the image";
       toast.error(errorMessage);
     },
   });
 
-  const onSubmit = React.useCallback(async (data: FormValues) => {
-    // Check limit before uploading
-    const limitCheck = await checkImageLimit.canUpload(data.files.length);
+  const onSubmit = React.useCallback(
+    async (data: FormValues) => {
+      const limitCheck = await checkImageLimit.canUpload(data.files.length);
 
-    if (!limitCheck.canUpload) {
-      toast.error(limitCheck.message);
-      return;
-    }
+      if (!limitCheck.canUpload) {
+        toast.error(limitCheck.message);
+        return;
+      }
 
-    const formData = new FormData();
-    data.files.forEach((file) => {
-      formData.append("files", file);
-    });
+      const formData = new FormData();
+      data.files.forEach((file) => {
+        formData.append("files", file);
+      });
 
-    uploadMutation.mutate(formData);
-  }, [uploadMutation]);
+      uploadMutation.mutate(formData);
+    },
+    [uploadMutation]
+  );
 
   const remainingSlots = MAX_IMAGES_PER_USER - imageCount;
   const isAtLimit = imageCount >= MAX_IMAGES_PER_USER;
@@ -112,15 +115,22 @@ export default function FileUploadFormDemo() {
   return (
     <TooltipProvider>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full space-y-6"
+        >
           {isAtLimit && (
             <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
               <div className="flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-destructive">Upload Limit Reached</h3>
+                  <h3 className="font-semibold text-destructive">
+                    Upload Limit Reached
+                  </h3>
                   <p className="text-sm text-red-400 mt-1">
-                    You have reached the maximum of {MAX_IMAGES_PER_USER} images. Please delete some existing images to upload new ones.
+                    You have reached the maximum of {MAX_IMAGES_PER_USER}{" "}
+                    images. Please delete some existing images to upload new
+                    ones.
                   </p>
                 </div>
               </div>
@@ -159,12 +169,16 @@ export default function FileUploadFormDemo() {
                         </p>
                         {!isLoadingCount && (
                           <p className="text-xs text-muted-foreground mt-2">
-                            {imageCount}/{MAX_IMAGES_PER_USER} images used · {remainingSlots} slots remaining
+                            {imageCount}/{MAX_IMAGES_PER_USER} images used ·{" "}
+                            {remainingSlots} slots remaining
                           </p>
                         )}
                       </div>
                       <FileUploadTrigger asChild>
-                        <Button variant="secondary" className="mt-4 rounded-full font-semibold cursor-pointer">
+                        <Button
+                          variant="secondary"
+                          className="mt-4 rounded-full font-semibold cursor-pointer"
+                        >
                           Choose Files
                         </Button>
                       </FileUploadTrigger>
@@ -172,7 +186,11 @@ export default function FileUploadFormDemo() {
 
                     <FileUploadList className="mt-6 space-y-3">
                       {field.value.map((file, index) => (
-                        <FileUploadItem key={index} value={file} className="bg-secondary/30 border border-border rounded-xl p-3 min-w-0">
+                        <FileUploadItem
+                          key={index}
+                          value={file}
+                          className="bg-secondary/30 border border-border rounded-xl p-3 min-w-0"
+                        >
                           <FileUploadItemPreview className="rounded-lg w-12 h-12 object-cover shrink-0" />
                           <FileUploadItemMetadata className="text-sm font-medium" />
                           <Tooltip>
@@ -205,7 +223,9 @@ export default function FileUploadFormDemo() {
 
           <div className="flex justify-end pt-4">
             <Button
-              disabled={uploadMutation.isPending || form.watch("files").length === 0}
+              disabled={
+                uploadMutation.isPending || form.watch("files").length === 0
+              }
               type="submit"
               size="lg"
               className="rounded-full font-bold px-8 cursor-pointer"

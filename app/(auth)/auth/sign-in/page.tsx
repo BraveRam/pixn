@@ -100,7 +100,6 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 relative overflow-hidden bg-background">
-      {/* Animated background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/30 rounded-full blur-3xl animate-pulse" />
         <div
@@ -113,7 +112,6 @@ const LoginPage = () => {
         />
       </div>
 
-      {/* Left Side - Branding */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -146,9 +144,7 @@ const LoginPage = () => {
             >
               Store & Search
               <br />
-              <span className="text-red-500">
-                Your Memories
-              </span>
+              <span className="text-red-500">Your Memories</span>
             </motion.h2>
 
             <motion.p
@@ -194,10 +190,11 @@ const LoginPage = () => {
               {features.map((_, i) => (
                 <div
                   key={i}
-                  className={`h-1 rounded-full transition-all duration-300 ${i === activeFeature
-                    ? "w-12 bg-primary"
-                    : "w-8 bg-primary/30"
-                    }`}
+                  className={`h-1 rounded-full transition-all duration-300 ${
+                    i === activeFeature
+                      ? "w-12 bg-primary"
+                      : "w-8 bg-primary/30"
+                  }`}
                 />
               ))}
             </div>
@@ -229,7 +226,6 @@ const LoginPage = () => {
         </p>
       </motion.div>
 
-      {/* Right Side - Sign In Form */}
       <div className="flex items-center justify-center p-6 lg:p-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -237,7 +233,6 @@ const LoginPage = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="w-full max-w-md space-y-8"
         >
-          {/* Mobile Logo */}
           <Link
             href="/"
             className="flex lg:hidden items-center gap-3 justify-center"
