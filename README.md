@@ -1,51 +1,90 @@
-# pixn
+# Pixn 📸
 
-[![Homepage](https://img.shields.io/badge/homepage-pixn.vercel.app-blue)](https://pixn.vercel.app)
+Your images, perfectly organized. **Pixn** is an AI-powered image gallery and search platform that understands your photos better than you do.
 
-## Overview
+[![Homepage](https://img.shields.io/badge/homepage-pixn.vercel.app-red)](https://pixn.vercel.app)
+[![Tech Stack](https://img.shields.io/badge/stack-Next.js%20|%20Supabase%20|%20AI-black)](https://github.com/BraveRam/pixn)
 
-**pixn**, an image uploader, is a public project by [BraveRam](https://github.com/BraveRam), built primarily with the following technologies.
+## 🚀 Overview
 
-## Technology Stack
+Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini 2.0 Flash model, Pixn automatically generates detailed descriptions for every image you upload. This enables **semantic search**, allowing you to find photos using natural language (e.g., "show me photos of sunset at the beach") instead of just filenames or tags.
 
-- **TypeScript** (Main language)
-- **TailwindCSS**
-- **JavaScript**
-- **Next.JS**
-- **Supabase**
+## ✨ Key Features
 
-## Getting Started
+- **AI-Powered Tagging**: Automatically generates rich descriptions for uploaded images.
+- **Semantic Search**: Find images using natural language queries powered by vector embeddings.
+- **Modern UI/UX**: Sleek, dark-themed interface built with Tailwind CSS 4 and Framer Motion.
+- **Secure Authentication**: Built-in user accounts and data protection via Supabase.
+- **Optimized Uploads**: Fast, multi-file uploads with a dedicated dashboard.
 
-Clone the repository:
-```bash
-git clone https://github.com/BraveRam/pixn.git
-cd pixn
-```
+## 🛠️ Tech Stack
 
-Install dependencies:
-```bash
-npm install
-```
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Backend / Database**: [Supabase](https://supabase.com/) (PostgreSQL + Vector)
+- **AI Integration**: [AI SDK](https://sdk.vercel.ai/) with [Google Gemini 2.0 Flash](https://deepmind.google/technologies/gemini/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Package Manager**: [Bun](https://bun.sh/)
 
-Run the development server:
-```bash
-npm start
-# or
-npm run dev
-```
+## 🏁 Getting Started
 
-Visit [https://pixn.vercel.app](https://pixn.vercel.app) for the live site.
+### Prerequisites
 
-## Contributing
+- [Bun](https://bun.sh/) (recommended) or Node.js
+- Supabase project with Vector extension enabled
+- Gemini API Key
 
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+### Installation
 
-## License
+1. Clone the repository:
 
-Feel free to suggest one or ask for guidance.
+   ```bash
+   git clone https://github.com/BraveRam/pixn.git
+   cd pixn
+   ```
 
-## Author
+2. Install dependencies:
 
-- [BraveRam](https://github.com/BraveRam)
+   ```bash
+   bun install
+   ```
+
+3. Set up environment variables:
+   Create a `.env` file in the root directory:
+
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+
+4. Run the development server:
+   ```bash
+   bun dev
+   ```
+
+Visit [http://localhost:3000](http://localhost:3000) to see the app in action.
+
+## 🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/feature`)
+3. Commit your Changes (`git commit -m 'Add some feature'`)
+4. Push to the Branch (`git push origin feature/feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 👤 Author
+
+**BraveRam** - [GitHub](https://github.com/BraveRam)
 
 ---
+
+Built with ❤️ by [BraveRam](https://github.com/BraveRam)
