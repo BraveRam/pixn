@@ -9,9 +9,9 @@ const SHARE_TTL_SECONDS = 60 * 60 * 24 * 7;
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const rawPaths = body?.paths;
+    const rawPaths: unknown[] = Array.isArray(body?.paths) ? body.paths : [];
 
-    if (!Array.isArray(rawPaths) || rawPaths.length === 0) {
+    if (rawPaths.length === 0) {
       return NextResponse.json(
         { error: "paths must be a non-empty array" },
         { status: 400 }

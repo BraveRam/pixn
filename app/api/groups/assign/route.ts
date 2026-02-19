@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const groupId = typeof body?.groupId === "string" ? body.groupId : "";
-    const rawPaths = Array.isArray(body?.paths) ? body.paths : [];
+    const rawPaths: unknown[] = Array.isArray(body?.paths) ? body.paths : [];
     const paths = Array.from(
       new Set(rawPaths.filter((path): path is string => typeof path === "string"))
     );
