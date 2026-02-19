@@ -307,6 +307,51 @@ export default function GalleryPage() {
     setSelectedPaths((prev) => (prev.includes(path) ? prev : [...prev, path]));
   };
 
+  const selectionActions = (
+    <>
+      <Button
+        type="button"
+        onClick={() => handleShare(selectedPaths)}
+        disabled={selectedPaths.length === 0 || createShareMutation.isPending}
+        className="rounded-full cursor-pointer w-full sm:w-auto"
+      >
+        {createShareMutation.isPending ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creating Link...
+          </>
+        ) : (
+          <>
+            <Share2 className="mr-2 h-4 w-4" />
+            Share Selected ({selectedPaths.length})
+          </>
+        )}
+      </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={() => {
+          setSelectedGroupId(groups[0]?.id ?? "");
+          setIsGroupDialogOpen(true);
+        }}
+        disabled={selectedPaths.length === 0}
+        className="rounded-full cursor-pointer w-full sm:w-auto"
+      >
+        <FolderPlus className="mr-2 h-4 w-4" />
+        Add to Group ({selectedPaths.length})
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={clearSelectionMode}
+        className="rounded-full cursor-pointer w-full sm:w-auto"
+      >
+        <X className="mr-2 h-4 w-4" />
+        Cancel
+      </Button>
+    </>
+  );
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background pt-24 pb-10">
@@ -343,50 +388,9 @@ export default function GalleryPage() {
               />
             </div>
             {isSelectionMode ? (
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  onClick={() => handleShare(selectedPaths)}
-                  disabled={
-                    selectedPaths.length === 0 || createShareMutation.isPending
-                  }
-                  className="rounded-full cursor-pointer"
-                >
-                  {createShareMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating Link...
-                    </>
-                  ) : (
-                    <>
-                      <Share2 className="mr-2 h-4 w-4" />
-                      Share Selected ({selectedPaths.length})
-                    </>
-                  )}
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => {
-                    setSelectedGroupId(groups[0]?.id ?? "");
-                    setIsGroupDialogOpen(true);
-                  }}
-                  disabled={selectedPaths.length === 0}
-                  className="rounded-full cursor-pointer"
-                >
-                  <FolderPlus className="mr-2 h-4 w-4" />
-                  Add to Group ({selectedPaths.length})
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={clearSelectionMode}
-                  className="rounded-full cursor-pointer"
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Cancel
-                </Button>
-              </div>
+              <p className="text-xs text-muted-foreground">
+                {selectedPaths.length} selected
+              </p>
             ) : (
               <p className="text-xs text-muted-foreground">
                 Hold an image to start multi-select organizing and sharing
@@ -637,6 +641,16 @@ export default function GalleryPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {isSelectionMode && (
+        <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1.5rem)] sm:w-auto z-50">
+          <div className="rounded-2xl border border-border bg-background/95 backdrop-blur-md shadow-xl p-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              {selectionActions}
+            </div>
+          </div>
+        </div>
+      )}
 
       <Dialog
         open={!!deletingImage}
