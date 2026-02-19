@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 
 export function ThemeToggle() {
-    const { setTheme, theme } = useTheme();
+    useTheme();
     const [mounted, setMounted] = React.useState(false);
 
     React.useEffect(() => {

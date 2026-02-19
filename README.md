@@ -16,6 +16,7 @@ Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini 2
 - **Modern UI/UX**: Sleek, dark-themed interface built with Tailwind CSS 4 and Framer Motion.
 - **Secure Authentication**: Built-in user accounts and data protection via Supabase.
 - **Optimized Uploads**: Fast, multi-file uploads with a dedicated dashboard.
+- **Dynamic Share Links**: Share one or multiple photos using Pixn-hosted URLs.
 
 ## 🛠️ Tech Stack
 
@@ -58,9 +59,15 @@ Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini 2
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    GEMINI_API_KEY=your_gemini_api_key
+   SHARE_TOKEN_SECRET=your_long_random_secret
+   NEXT_PUBLIC_SITE_URL=http://localhost:3000
    ```
 
-4. Run the development server:
+4. (Required for image grouping) create grouping tables in Supabase:
+
+   Run `docs/groups-schema.sql` in your Supabase SQL editor.
+
+5. Run the development server:
    ```bash
    bun dev
    ```

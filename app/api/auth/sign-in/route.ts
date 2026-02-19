@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { validateEmailRedirectTo } from "@/lib/security";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -13,12 +14,20 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const safeRedirectTo = validateEmailRedirectTo(redirectTo, request.url);
+        if (!safeRedirectTo) {
+            return NextResponse.json(
+                { error: "Invalid redirectTo URL" },
+                { status: 400 }
+            );
+        }
+
         const supabase = await createClient();
         const { data, error } = await supabase.auth.signInWithOtp({
             email,
             options: {
                 shouldCreateUser: true,
-                emailRedirectTo: redirectTo,
+                emailRedirectTo: safeRedirectTo,
             },
         });
 

@@ -29,7 +29,7 @@ export default function TermsOfServicePage() {
                     <section className="space-y-3">
                         <h2 className="text-2xl font-semibold">Agreement to Terms</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            By accessing or using Pixn ("Service"), you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the Service.
+                            By accessing or using Pixn (&quot;Service&quot;), you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access the Service.
                         </p>
                     </section>
 
@@ -89,7 +89,7 @@ export default function TermsOfServicePage() {
                     <section className="space-y-3">
                         <h2 className="text-2xl font-semibold">Disclaimer of Warranties</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            The Service is provided "as is" without warranties of any kind. We do not guarantee that the Service will be error-free, secure, or uninterrupted.
+                            The Service is provided &quot;as is&quot; without warranties of any kind. We do not guarantee that the Service will be error-free, secure, or uninterrupted.
                         </p>
                     </section>
 
@@ -103,7 +103,7 @@ export default function TermsOfServicePage() {
                     <section className="space-y-3">
                         <h2 className="text-2xl font-semibold">Changes to Terms</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            We reserve the right to modify these Terms at any time. We will notify users of any material changes by updating the "Last updated" date. Continued use of the Service after changes constitutes acceptance of the new Terms.
+                            We reserve the right to modify these Terms at any time. We will notify users of any material changes by updating the &quot;Last updated&quot; date. Continued use of the Service after changes constitutes acceptance of the new Terms.
                         </p>
                     </section>
 

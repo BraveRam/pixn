@@ -45,6 +45,7 @@ export async function updateSession(request: NextRequest) {
     "/auth",
     "/privacy",
     "/terms",
+    "/share",
     "/api",
   ];
 

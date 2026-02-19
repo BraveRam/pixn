@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Download,
@@ -10,6 +10,10 @@ import {
   Loader2,
   Copy,
   Home,
+  Share2,
+  CheckCircle2,
+  X,
+  FolderPlus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,8 +35,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Dropdown } from "@/components/ui/dropdown";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { galleryApi } from "@/lib/api/gallery";
+import { shareApi } from "@/lib/api/share";
+import { groupsApi, type Group } from "@/lib/api/groups";
 import {
   galleryKeys,
   fetchGalleryImages,
@@ -42,6 +49,12 @@ import {
 export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [deletingImage, setDeletingImage] = useState<GalleryImage | null>(null);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedPaths, setSelectedPaths] = useState<string[]>([]);
+  const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [selectedGroupId, setSelectedGroupId] = useState<string>("");
+  const [activeGroupId, setActiveGroupId] = useState<string>("all");
   const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,11 +62,23 @@ export default function GalleryPage() {
   const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: searchQuery
       ? ["gallery", "search", searchQuery]
-      : galleryKeys.all,
-    queryFn: () =>
-      searchQuery
-        ? import("@/lib/api/queries").then((m) => m.searchImages(searchQuery))
-        : fetchGalleryImages(),
+      : activeGroupId === "all"
+        ? galleryKeys.all
+        : ["gallery", "group", activeGroupId],
+    queryFn: () => {
+      if (searchQuery) {
+        return import("@/lib/api/queries").then((m) => m.searchImages(searchQuery));
+      }
+      if (activeGroupId !== "all") {
+        return groupsApi.getGroupImages(activeGroupId);
+      }
+      return fetchGalleryImages();
+    },
+  });
+
+  const { data: groups = [] } = useQuery<Group[]>({
+    queryKey: ["groups"],
+    queryFn: groupsApi.getGroups,
   });
 
   const deleteMutation = useMutation({
@@ -151,6 +176,46 @@ export default function GalleryPage() {
     },
   });
 
+  const createShareMutation = useMutation({
+    mutationFn: (paths: string[]) => shareApi.createShareLink(paths),
+    onSuccess: async (data) => {
+      await navigator.clipboard.writeText(data.shareUrl);
+      toast.success(
+        `Share link copied (${data.count} image${data.count > 1 ? "s" : ""})`
+      );
+    },
+    onError: () => {
+      toast.error("Failed to create share link");
+    },
+  });
+
+  const createGroupMutation = useMutation({
+    mutationFn: (name: string) => groupsApi.createGroup(name),
+    onSuccess: (group) => {
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      setSelectedGroupId(group.id);
+      setNewGroupName("");
+      toast.success("Group created");
+    },
+    onError: () => {
+      toast.error("Failed to create group");
+    },
+  });
+
+  const assignGroupMutation = useMutation({
+    mutationFn: ({ groupId, paths }: { groupId: string; paths: string[] }) =>
+      groupsApi.assignImagesToGroup(groupId, paths),
+    onSuccess: () => {
+      setIsGroupDialogOpen(false);
+      clearSelectionMode();
+      queryClient.invalidateQueries({ queryKey: ["gallery"] });
+      toast.success("Images organized into group");
+    },
+    onError: () => {
+      toast.error("Failed to organize selected images");
+    },
+  });
+
   const handleDownload = async (url: string, path: string) => {
     try {
       const response = await fetch(url);
@@ -174,6 +239,17 @@ export default function GalleryPage() {
     setDeletingImage(img);
   };
 
+  const clearSelectionMode = () => {
+    setIsSelectionMode(false);
+    setSelectedPaths([]);
+  };
+
+  const toggleSelectedPath = (path: string) => {
+    setSelectedPaths((prev) =>
+      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path]
+    );
+  };
+
   const confirmDelete = () => {
     if (!deletingImage || deleteMutation.isPending) return;
     deleteMutation.mutate({ path: deletingImage.path });
@@ -185,6 +261,50 @@ export default function GalleryPage() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+  };
+
+  const handleShare = (paths: string[]) => {
+    if (paths.length === 0) {
+      toast.error("Select at least one image to share");
+      return;
+    }
+
+    createShareMutation.mutate(paths);
+  };
+
+  const handleCreateGroup = () => {
+    const name = newGroupName.trim();
+    if (!name) {
+      toast.error("Enter a group name");
+      return;
+    }
+    createGroupMutation.mutate(name);
+  };
+
+  const handleAssignGroup = () => {
+    if (!selectedGroupId) {
+      toast.error("Select a group");
+      return;
+    }
+    if (selectedPaths.length === 0) {
+      toast.error("Select at least one image");
+      return;
+    }
+
+    assignGroupMutation.mutate({ groupId: selectedGroupId, paths: selectedPaths });
+  };
+
+  const handleCardClick = (img: GalleryImage) => {
+    if (isSelectionMode) {
+      toggleSelectedPath(img.path);
+      return;
+    }
+    setSelectedImage(img);
+  };
+
+  const handleLongPressSelect = (path: string) => {
+    setIsSelectionMode(true);
+    setSelectedPaths((prev) => (prev.includes(path) ? prev : [...prev, path]));
   };
 
   return (
@@ -200,6 +320,78 @@ export default function GalleryPage() {
               placeholder="A boy in college..."
               currentQuery={searchQuery}
             />
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="group-filter"
+                className="text-xs text-muted-foreground"
+              >
+                Group
+              </label>
+              <Dropdown
+                id="group-filter"
+                value={activeGroupId}
+                aria-label="Filter gallery by group"
+                onChange={setActiveGroupId}
+                options={[
+                  { value: "all", label: "All Images" },
+                  ...groups.map((group) => ({
+                    value: group.id,
+                    label: group.name,
+                  })),
+                ]}
+                className="w-44"
+              />
+            </div>
+            {isSelectionMode ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  onClick={() => handleShare(selectedPaths)}
+                  disabled={
+                    selectedPaths.length === 0 || createShareMutation.isPending
+                  }
+                  className="rounded-full cursor-pointer"
+                >
+                  {createShareMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating Link...
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="mr-2 h-4 w-4" />
+                      Share Selected ({selectedPaths.length})
+                    </>
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setSelectedGroupId(groups[0]?.id ?? "");
+                    setIsGroupDialogOpen(true);
+                  }}
+                  disabled={selectedPaths.length === 0}
+                  className="rounded-full cursor-pointer"
+                >
+                  <FolderPlus className="mr-2 h-4 w-4" />
+                  Add to Group ({selectedPaths.length})
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={clearSelectionMode}
+                  className="rounded-full cursor-pointer"
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Hold an image to start multi-select organizing and sharing
+              </p>
+            )}
           </div>
 
           {isLoading ? (
@@ -214,6 +406,7 @@ export default function GalleryPage() {
                     onClick={() => setSearchQuery("")}
                     className="rounded-full shrink-0 hover:bg-secondary/80"
                     title="Show all images"
+                    aria-label="Show all images"
                   >
                     <Home className="w-5 h-5" />
                   </Button>
@@ -230,7 +423,11 @@ export default function GalleryPage() {
                       onDownload={handleDownload}
                       onToggle={handleToggle}
                       onDelete={() => handleDelete(img)}
-                      onClick={() => setSelectedImage(img)}
+                      onClick={() => handleCardClick(img)}
+                      isSelectionMode={isSelectionMode}
+                      isSelected={selectedPaths.includes(img.path)}
+                      onSelect={() => toggleSelectedPath(img.path)}
+                      onLongPress={() => handleLongPressSelect(img.path)}
                     />
                   </div>
                 ))}
@@ -318,18 +515,24 @@ export default function GalleryPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  if (selectedImage?.signedUrl) {
-                    navigator.clipboard.writeText(
-                      selectedImage.signedUrl as string
-                    );
-                    toast.success(
-                      "Link copied to clipboard - the link expires after 30 days"
-                    );
+                  if (selectedImage?.path) {
+                    handleShare([selectedImage.path]);
                   }
                 }}
+                disabled={createShareMutation.isPending}
+                className="cursor-pointer"
               >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy Link
+                {createShareMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy Share Link
+                  </>
+                )}
               </Button>
               <Button
                 variant="default"
@@ -342,11 +545,95 @@ export default function GalleryPage() {
                     );
                   }
                 }}
+                className="cursor-pointer"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Download
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isGroupDialogOpen}
+        onOpenChange={(open) => setIsGroupDialogOpen(open)}
+      >
+        <DialogContent className="max-w-md w-[92vw] bg-background border-border">
+          <DialogHeader>
+            <DialogTitle>Organize Selected Images</DialogTitle>
+            <DialogDescription>
+              Add {selectedPaths.length} selected image
+              {selectedPaths.length > 1 ? "s" : ""} to a group.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <label htmlFor="existing-group" className="text-sm font-medium">
+                Existing groups
+              </label>
+              <Dropdown
+                id="existing-group"
+                value={selectedGroupId}
+                aria-label="Select existing group"
+                onChange={setSelectedGroupId}
+                options={[
+                  { value: "", label: "Select a group" },
+                  ...groups.map((group) => ({
+                    value: group.id,
+                    label: group.name,
+                  })),
+                ]}
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="new-group-name" className="text-sm font-medium">
+                Create new group
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="new-group-name"
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                  placeholder="e.g. Summer Trip"
+                  className="h-10 flex-1 rounded-md border border-border bg-background px-3 text-sm"
+                  maxLength={60}
+                  aria-label="New group name"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCreateGroup}
+                  disabled={createGroupMutation.isPending}
+                  className="cursor-pointer"
+                >
+                  {createGroupMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Create"
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              className="w-full"
+              disabled={assignGroupMutation.isPending || !selectedGroupId}
+              onClick={handleAssignGroup}
+            >
+              {assignGroupMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Add Selected to Group"
+              )}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -400,15 +687,46 @@ function GalleryImage({
   onToggle,
   onDelete,
   onClick,
+  isSelectionMode,
+  isSelected,
+  onSelect,
+  onLongPress,
 }: {
   img: GalleryImage;
   onDownload: (url: string, path: string) => void;
   onToggle: (path: string) => void;
   onDelete: (img: GalleryImage) => void;
   onClick: () => void;
+  isSelectionMode: boolean;
+  isSelected: boolean;
+  onSelect: () => void;
+  onLongPress: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+  const [isPressing, setIsPressing] = useState(false);
+  const longPressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const longPressTriggeredRef = useRef(false);
+
+  const clearLongPress = () => {
+    if (longPressTimeoutRef.current) {
+      clearTimeout(longPressTimeoutRef.current);
+      longPressTimeoutRef.current = null;
+    }
+    setIsPressing(false);
+  };
+
+  const startLongPress = () => {
+    if (isSelectionMode) return;
+    setIsPressing(true);
+    longPressTimeoutRef.current = setTimeout(() => {
+      longPressTriggeredRef.current = true;
+      onLongPress();
+      setIsPressing(false);
+    }, 420);
+  };
 
   return (
     <div
@@ -417,8 +735,30 @@ function GalleryImage({
         isLoading && "h-64"
       )}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={onClick}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        clearLongPress();
+      }}
+      onMouseDown={startLongPress}
+      onMouseUp={clearLongPress}
+      onTouchStart={startLongPress}
+      onTouchEnd={clearLongPress}
+      onTouchCancel={clearLongPress}
+      onContextMenu={(e) => {
+        if (!isSelectionMode) {
+          e.preventDefault();
+          onLongPress();
+        }
+      }}
+      onClick={(e) => {
+        if (longPressTriggeredRef.current) {
+          e.preventDefault();
+          e.stopPropagation();
+          longPressTriggeredRef.current = false;
+          return;
+        }
+        onClick();
+      }}
     >
       {isLoading && (
         <Skeleton className="w-full h-full absolute inset-0 z-10" />
@@ -432,16 +772,42 @@ function GalleryImage({
         className={cn(
           "w-full h-auto object-cover transition-transform duration-500 ease-in-out",
           isLoading ? "opacity-0" : "opacity-100",
-          isHovered && "scale-105"
+          isHovered && "scale-105",
+          isPressing && "scale-[1.02]"
         )}
         onLoad={() => setIsLoading(false)}
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
       />
 
+      {isSelectionMode && (
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect();
+          }}
+          variant="secondary"
+          size="icon"
+          aria-label={isSelected ? "Deselect image" : "Select image"}
+          className={cn(
+            "absolute top-3 left-3 rounded-full h-10 w-10 border-none shadow-md z-20",
+            isSelected
+              ? "bg-emerald-500 hover:bg-emerald-500 text-white ring-2 ring-white/90"
+              : "bg-black/70 hover:bg-black/80 text-white ring-1 ring-white/60"
+          )}
+        >
+          <CheckCircle2
+            className={cn(
+              "h-5 w-5",
+              isSelected ? "fill-white text-white" : "text-white/80"
+            )}
+          />
+        </Button>
+      )}
+
       <div
         className={cn(
           "absolute inset-0 bg-black/40 transition-opacity duration-300 flex flex-col justify-between p-4",
-          isHovered ? "opacity-100" : "opacity-0"
+          isSelectionMode || isHovered ? "opacity-100" : "opacity-0"
         )}
       >
         <div className="flex justify-end">
@@ -454,6 +820,7 @@ function GalleryImage({
                 }}
                 variant="secondary"
                 size="icon"
+                aria-label={img.favorite ? "Unfavorite image" : "Favorite image"}
                 className="rounded-full h-10 w-10 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
               >
                 {img.favorite ? (
@@ -484,6 +851,7 @@ function GalleryImage({
                   }}
                   variant="secondary"
                   size="icon"
+                  aria-label="Download image"
                   className="rounded-full h-9 w-9 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
                 >
                   <Download className="h-4 w-4" />
@@ -503,6 +871,7 @@ function GalleryImage({
                   }}
                   variant="secondary"
                   size="icon"
+                  aria-label="Delete image"
                   className="rounded-full h-9 w-9 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
                 >
                   <Trash className="h-4 w-4" />

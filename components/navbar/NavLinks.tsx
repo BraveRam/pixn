@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { FastLink } from "@/components/navigation/FastLink";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ export function NavLinks() {
             {links.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                    <Link key={link.href} href={link.href}>
+                    <FastLink key={link.href} href={link.href}>
                         <Button
                             variant="ghost"
                             size="sm"
@@ -29,7 +29,7 @@ export function NavLinks() {
                         >
                             {link.label}
                         </Button>
-                    </Link>
+                    </FastLink>
                 );
             })}
         </div>

@@ -54,7 +54,8 @@ export async function POST(request: Request) {
     const { data: images, error: galleryError } = await supabase
       .from("gallery")
       .select("path, name, size, favorite, user_id, created_at")
-      .in("path", paths);
+      .in("path", paths)
+      .eq("user_id", user.id);
 
     if (galleryError) {
       return NextResponse.json({ results: [] });

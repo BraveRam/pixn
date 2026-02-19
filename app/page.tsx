@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { ArrowRight, Lock, Search, Zap, LayoutGrid } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -124,7 +123,7 @@ export default function LandingPage() {
                     </div>
                     <div className="ml-4 flex-1 max-w-md h-8 rounded-md bg-white/5 flex items-center px-3 text-xs text-zinc-500">
                       <Search className="w-3 h-3 mr-2" />
-                      Search for "red sports car"...
+                      Search for &quot;red sports car&quot;...
                     </div>
                   </div>
                   <div className="p-6 grid grid-cols-3 md:grid-cols-4 gap-4 mt-12">

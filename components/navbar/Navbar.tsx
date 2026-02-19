@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { FastLink } from "@/components/navigation/FastLink";
 
 import { NavLinks } from "./NavLinks";
 
@@ -51,12 +52,12 @@ export default async function Navbar() {
               <div className="flex items-center gap-3">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link href="/upload">
+                    <FastLink href="/upload">
                       <Button className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all cursor-pointer">
                         <Plus className="w-4 h-4" />
                         Publish
                       </Button>
-                    </Link>
+                    </FastLink>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Upload new images</p>
@@ -98,11 +99,16 @@ export default async function Navbar() {
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
-              <Link href="/upload">
-                <Button size="icon" variant="ghost" className="rounded-full">
+              <FastLink href="/upload">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="rounded-full"
+                  aria-label="Upload image"
+                >
                   <Plus className="w-5 h-5" />
                 </Button>
-              </Link>
+              </FastLink>
               <ThemeToggle />
               <MobileMenu user={user} />
             </div>
