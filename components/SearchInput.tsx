@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, X, Sparkles } from "lucide-react";
+import { X, Sparkles } from "lucide-react";
 
 interface SearchInputProps {
     onSearch: (query: string) => void;
@@ -46,6 +46,7 @@ export function SearchInput({ onSearch, placeholder = "Search images...", classN
                     <button
                         type="button"
                         onClick={handleClear}
+                        aria-label="Clear search"
                         className="absolute right-20 p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors z-20"
                     >
                         <X className="w-4 h-4" />

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { getCanonicalOrigin } from "@/lib/security";
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = getCanonicalOrigin(request.url);
   const code = searchParams.get("code");
   if (code) {
     const supabase = await createClient();
@@ -11,7 +13,7 @@ export async function GET(request: Request) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      const { data, error: findUserError } = await supabase
+      const { error: findUserError } = await supabase
         .from("users")
         .select("*")
         .eq("email", user?.email)
@@ -26,15 +28,7 @@ export async function GET(request: Request) {
           throw error;
         }
       }
-      const forwardedHost = request.headers.get("x-forwarded-host");
-      const isLocalEnv = process.env.NODE_ENV === "development";
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}/gallery`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}/gallery`);
-      } else {
-        return NextResponse.redirect(`${origin}/gallery`);
-      }
+      return NextResponse.redirect(`${origin}/gallery`);
     }
   }
 

@@ -19,11 +19,9 @@ import { toast } from "sonner";
 import {
   ArrowRight,
   Mail,
-  Sparkles,
   Shield,
   Zap,
   Heart,
-  Lock,
   Check,
 } from "lucide-react";
 import Link from "next/link";
@@ -93,7 +91,7 @@ const LoginPage = () => {
         position: "top-right",
       });
       form.reset();
-    } catch (error) {
+    } catch {
       toast.error("An error occurred while signing in - try again later.");
     }
   };

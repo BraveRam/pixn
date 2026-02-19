@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Button } from "../ui/button";
 import { AlignJustify, BookHeart, Images, LogOut, X } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -17,6 +16,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import { FastLink } from "@/components/navigation/FastLink";
 
 import { User } from "@supabase/supabase-js";
 
@@ -33,7 +33,12 @@ const MobileMenu = ({ user }: Props) => {
 
   return (
     <div className="relative">
-      <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(!open)}
+        aria-label={open ? "Close mobile menu" : "Open mobile menu"}
+      >
         {open ? <X /> : <AlignJustify />}
       </Button>
 
@@ -48,7 +53,7 @@ const MobileMenu = ({ user }: Props) => {
             </p>
           </div>
 
-          <Link href="/gallery" onClick={() => setOpen(false)}>
+          <FastLink href="/gallery" onClick={() => setOpen(false)}>
             <Button
               variant="ghost"
               className={cn(
@@ -59,8 +64,8 @@ const MobileMenu = ({ user }: Props) => {
               <Images className="w-4 h-4" />
               Gallery
             </Button>
-          </Link>
-          <Link href="/fav" onClick={() => setOpen(false)}>
+          </FastLink>
+          <FastLink href="/fav" onClick={() => setOpen(false)}>
             <Button
               variant="ghost"
               className={cn(
@@ -71,7 +76,7 @@ const MobileMenu = ({ user }: Props) => {
               <BookHeart className="w-4 h-4" />
               Favorites
             </Button>
-          </Link>
+          </FastLink>
 
           <div className="h-px bg-border my-2" />
 

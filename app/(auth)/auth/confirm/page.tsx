@@ -23,7 +23,7 @@ export default function ConfirmPage() {
     }
 
     const verify = async () => {
-      const { data, error } = await supabase.auth.verifyOtp({
+      const { error } = await supabase.auth.verifyOtp({
         token_hash,
         type,
       });

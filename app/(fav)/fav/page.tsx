@@ -135,7 +135,7 @@ export default function FavoritesPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
       toast.success("Image downloaded");
-    } catch (err) {
+    } catch {
       toast.error("Failed to download image");
     }
   };
@@ -184,6 +184,7 @@ export default function FavoritesPage() {
                     onClick={() => setSearchQuery("")}
                     className="rounded-full shrink-0 hover:bg-secondary/80"
                     title="Show all favorites"
+                    aria-label="Show all favorites"
                   >
                     <Home className="w-5 h-5" />
                   </Button>
@@ -297,6 +298,7 @@ export default function FavoritesPage() {
                     );
                   }
                 }}
+                className="cursor-pointer"
               >
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Link
@@ -312,6 +314,7 @@ export default function FavoritesPage() {
                     );
                   }
                 }}
+                className="cursor-pointer"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Download
@@ -423,6 +426,7 @@ function GalleryImage({
                 }}
                 variant="secondary"
                 size="icon"
+                aria-label="Unfavorite image"
                 className="rounded-full h-10 w-10 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
               >
                 <Heart className="h-5 w-5 text-red-500 fill-red-500" />
@@ -455,6 +459,7 @@ function GalleryImage({
                   }}
                   variant="secondary"
                   size="icon"
+                  aria-label="Download image"
                   className="rounded-full h-9 w-9 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
                 >
                   <Download className="h-4 w-4" />
@@ -473,6 +478,7 @@ function GalleryImage({
                   }}
                   variant="secondary"
                   size="icon"
+                  aria-label="Delete image"
                   className="rounded-full h-9 w-9 bg-white/90 hover:bg-white text-black border-none shadow-sm cursor-pointer"
                 >
                   <Trash className="h-4 w-4" />

@@ -6,9 +6,18 @@ export async function GET() {
   const supabase = await createClient();
 
   try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { data: galleryImages, error: galleryError } = await supabase
       .from("gallery")
-      .select("path");
+      .select("path")
+      .eq("user_id", user.id);
 
     if (galleryError) {
       throw new Error(
@@ -22,7 +31,8 @@ export async function GET() {
 
     const { data: existingEmbeddings, error: embeddingsError } = await supabase
       .from("embeddings")
-      .select("id");
+      .select("path")
+      .eq("user_id", user.id);
 
     if (embeddingsError) {
       throw new Error(
@@ -30,10 +40,10 @@ export async function GET() {
       );
     }
 
-    const existingIds = new Set(existingEmbeddings?.map((e) => e.id) || []);
+    const existingPaths = new Set(existingEmbeddings?.map((e) => e.path) || []);
 
     const missingImages = galleryImages.filter(
-      (img) => !existingIds.has(img.path)
+      (img) => !existingPaths.has(img.path)
     );
 
     if (missingImages.length === 0) {
@@ -74,6 +84,7 @@ export async function GET() {
           .from("embeddings")
           .insert({
             path: img.path,
+            user_id: user.id,
             content: description,
             embedding: embedding,
           });

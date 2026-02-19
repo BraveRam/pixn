@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
                     <section className="space-y-3">
                         <h2 className="text-2xl font-semibold">Introduction</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            Welcome to Pixn ("we," "our," or "us"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our image gallery service.
+                            Welcome to Pixn (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our image gallery service.
                         </p>
                     </section>
 
@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
                     <section className="space-y-3">
                         <h2 className="text-2xl font-semibold">Changes to This Policy</h2>
                         <p className="text-muted-foreground leading-relaxed">
-                            We may update this Privacy Policy from time to time. We will notify you of any changes by updating the "Last updated" date at the top of this policy.
+                            We may update this Privacy Policy from time to time. We will notify you of any changes by updating the &quot;Last updated&quot; date at the top of this policy.
                         </p>
                     </section>
 
