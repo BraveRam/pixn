@@ -17,6 +17,7 @@ type DropdownProps = {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  renderOptionActions?: (option: DropdownOption) => React.ReactNode;
   "aria-label"?: string;
 };
 
@@ -28,6 +29,7 @@ export function Dropdown({
   placeholder = "Select an option",
   disabled,
   className,
+  renderOptionActions,
   "aria-label": ariaLabel,
 }: DropdownProps) {
   const [open, setOpen] = React.useState(false);
@@ -79,12 +81,13 @@ export function Dropdown({
         >
           {options.map((option) => {
             const isSelected = option.value === value;
+            const optionActions = renderOptionActions?.(option);
             return (
-              <button
+              <div
                 key={option.value}
-                type="button"
                 role="option"
                 aria-selected={isSelected}
+                tabIndex={0}
                 className={cn(
                   "w-full rounded-lg px-3 py-2 text-sm flex items-center justify-between text-left",
                   "hover:bg-accent hover:text-accent-foreground cursor-pointer",
@@ -94,10 +97,20 @@ export function Dropdown({
                   onChange(option.value);
                   setOpen(false);
                 }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onChange(option.value);
+                    setOpen(false);
+                  }
+                }}
               >
-                <span className="truncate">{option.label}</span>
-                {isSelected ? <Check className="h-4 w-4" /> : null}
-              </button>
+                <span className="min-w-0 truncate flex-1">{option.label}</span>
+                <span className="flex items-center gap-1 shrink-0">
+                  {isSelected ? <Check className="h-4 w-4" /> : null}
+                  {optionActions}
+                </span>
+              </div>
             );
           })}
         </div>

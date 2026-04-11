@@ -14,6 +14,8 @@ import {
   CheckCircle2,
   X,
   FolderPlus,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,6 +57,9 @@ export default function GalleryPage() {
   const [newGroupName, setNewGroupName] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState<string>("");
   const [activeGroupId, setActiveGroupId] = useState<string>("all");
+  const [renamingGroup, setRenamingGroup] = useState<Group | null>(null);
+  const [deletingGroup, setDeletingGroup] = useState<Group | null>(null);
+  const [renameGroupName, setRenameGroupName] = useState("");
   const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -202,6 +207,48 @@ export default function GalleryPage() {
     },
   });
 
+  const renameGroupMutation = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      groupsApi.renameGroup(id, name),
+    onSuccess: (group) => {
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      setRenamingGroup(null);
+      setRenameGroupName("");
+      if (selectedGroupId === group.id) {
+        setSelectedGroupId(group.id);
+      }
+      toast.success("Group renamed");
+    },
+    onError: (error: unknown) => {
+      const errorMessage =
+        (error as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error || "Failed to rename group";
+      toast.error(errorMessage);
+    },
+  });
+
+  const deleteGroupMutation = useMutation({
+    mutationFn: (id: string) => groupsApi.deleteGroup(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      queryClient.invalidateQueries({ queryKey: ["gallery"] });
+      if (deletingGroup?.id === activeGroupId) {
+        setActiveGroupId("all");
+      }
+      if (deletingGroup?.id === selectedGroupId) {
+        setSelectedGroupId("");
+      }
+      setDeletingGroup(null);
+      toast.success("Group deleted");
+    },
+    onError: (error: unknown) => {
+      const errorMessage =
+        (error as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error || "Failed to delete group";
+      toast.error(errorMessage);
+    },
+  });
+
   const assignGroupMutation = useMutation({
     mutationFn: ({ groupId, paths }: { groupId: string; paths: string[] }) =>
       groupsApi.assignImagesToGroup(groupId, paths),
@@ -294,6 +341,26 @@ export default function GalleryPage() {
     assignGroupMutation.mutate({ groupId: selectedGroupId, paths: selectedPaths });
   };
 
+  const handleOpenRenameGroup = (group: Group) => {
+    setRenamingGroup(group);
+    setRenameGroupName(group.name);
+  };
+
+  const handleConfirmRenameGroup = () => {
+    const name = renameGroupName.trim();
+    if (!renamingGroup || !name) {
+      toast.error("Enter a group name");
+      return;
+    }
+
+    renameGroupMutation.mutate({ id: renamingGroup.id, name });
+  };
+
+  const handleConfirmDeleteGroup = () => {
+    if (!deletingGroup || deleteGroupMutation.isPending) return;
+    deleteGroupMutation.mutate(deletingGroup.id);
+  };
+
   const handleCardClick = (img: GalleryImage) => {
     if (isSelectionMode) {
       toggleSelectedPath(img.path);
@@ -384,7 +451,41 @@ export default function GalleryPage() {
                     label: group.name,
                   })),
                 ]}
-                className="w-44"
+                renderOptionActions={(option) => {
+                  if (option.value === "all") return null;
+                  const group = groups.find((item) => item.id === option.value);
+                  if (!group) return null;
+
+                  return (
+                    <>
+                      <button
+                        type="button"
+                        aria-label={`Rename ${group.name}`}
+                        className="rounded-md p-1 text-muted-foreground hover:bg-accent-foreground/10 hover:text-foreground"
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleOpenRenameGroup(group);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Delete ${group.name}`}
+                        className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setDeletingGroup(group);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </>
+                  );
+                }}
+                className="w-72"
               />
             </div>
             {isSelectionMode ? (
@@ -555,6 +656,102 @@ export default function GalleryPage() {
                 Download
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!renamingGroup}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRenamingGroup(null);
+            setRenameGroupName("");
+          }
+        }}
+      >
+        <DialogContent className="max-w-md w-[92vw] bg-background border-border">
+          <DialogHeader>
+            <DialogTitle>Rename Group</DialogTitle>
+            <DialogDescription>
+              Update the name for &quot;{renamingGroup?.name}&quot;.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <input
+              value={renameGroupName}
+              onChange={(event) => setRenameGroupName(event.target.value)}
+              placeholder="e.g. Summer Trip"
+              className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+              maxLength={60}
+              aria-label="Rename group"
+            />
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setRenamingGroup(null);
+                  setRenameGroupName("");
+                }}
+                disabled={renameGroupMutation.isPending}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmRenameGroup}
+                disabled={renameGroupMutation.isPending}
+                className="cursor-pointer"
+              >
+                {renameGroupMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={!!deletingGroup}
+        onOpenChange={(open) => !open && setDeletingGroup(null)}
+      >
+        <DialogContent className="max-w-md w-[92vw] bg-background border-border">
+          <DialogHeader>
+            <DialogTitle>Delete Group</DialogTitle>
+            <DialogDescription>
+              Delete &quot;{deletingGroup?.name}&quot;? This removes the group and
+              its memberships, but keeps the images.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setDeletingGroup(null)}
+              disabled={deleteGroupMutation.isPending}
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDeleteGroup}
+              disabled={deleteGroupMutation.isPending}
+              className="cursor-pointer"
+            >
+              {deleteGroupMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Group"
+              )}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

@@ -18,6 +18,16 @@ export const groupsApi = {
     return response.data.group;
   },
 
+  renameGroup: async (id: string, name: string): Promise<Group> => {
+    const response = await axios.patch("/api/groups", { id, name });
+    return response.data.group;
+  },
+
+  deleteGroup: async (id: string) => {
+    const response = await axios.delete("/api/groups", { data: { id } });
+    return response.data as { success: boolean };
+  },
+
   assignImagesToGroup: async (groupId: string, paths: string[]) => {
     const response = await axios.post("/api/groups/assign", { groupId, paths });
     return response.data as { success: boolean; assigned: number };
