@@ -1,12 +1,5 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject, embedMany } from "ai";
+import { generateObject, embedMany, gateway } from "ai";
 import z from "zod";
-
-const apiKey = process.env.GEMINI_API_KEY;
-
-const google = createGoogleGenerativeAI({
-  apiKey,
-});
 
 const descriptionSchema = z.object({
   description: z.string().min(10).max(300),
@@ -17,7 +10,7 @@ export const generateImageDescription = async (
 ): Promise<string> => {
   try {
     const { object } = await generateObject({
-      model: google("gemini-2.0-flash"),
+      model: gateway("google/gemini-2.0-flash"),
       schema: descriptionSchema,
       messages: [
         {
@@ -50,12 +43,13 @@ export const generateImageDescription = async (
 export const generateEmbedding = async (text: string): Promise<number[]> => {
   try {
     const { embeddings } = await embedMany({
-      model: google.textEmbeddingModel("gemini-embedding-001"),
+      model: "openai/text-embedding-3-small",
       values: [text],
       providerOptions: {
-        google: {
-          outputDimensionality: 1536,
-          taskType: "SEMANTIC_SIMILARITY",
+        // Explicit 1536 to match the `embeddings.embedding` vector(1536) column.
+        // This is also the model default, so it can be dropped if it ever errors.
+        openai: {
+          dimensions: 1536,
         },
       },
     });

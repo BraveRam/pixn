@@ -23,7 +23,7 @@ Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini m
 - **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Backend / Database**: [Supabase](https://supabase.com/) (PostgreSQL + Vector)
-- **AI Integration**: [AI SDK](https://sdk.vercel.ai/) with [Google Gemini](https://deepmind.google/technologies/gemini/)
+- **AI Integration**: [AI SDK](https://sdk.vercel.ai/) routed through the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) (Google Gemini for descriptions, OpenAI for embeddings)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 - **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
 - **Icons**: [Lucide React](https://lucide.dev/)
@@ -58,7 +58,7 @@ Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini m
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   GEMINI_API_KEY=your_gemini_api_key
+   AI_GATEWAY_API_KEY=your_vercel_ai_gateway_key
    SHARE_TOKEN_SECRET=your_long_random_secret
    NEXT_PUBLIC_SITE_URL=http://localhost:3000
    ```

@@ -22,4 +22,4 @@ There is no dedicated automated test suite yet. Until one is added, treat `bun r
 Recent history uses short prefixes such as `fix:` and `modify:`. Prefer concise, imperative commit subjects like `fix: align upload validation`. Keep commits focused and avoid mixing refactors with behavior changes. PRs should include a short summary, linked issue if applicable, screenshots or screen recordings for UI changes, and the verification commands you ran.
 
 ## Security & Configuration Tips
-Secrets belong in `.env` and must never be committed. At minimum, local development expects `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `GEMINI_API_KEY`.
+Secrets belong in `.env` and must never be committed. At minimum, local development expects `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `AI_GATEWAY_API_KEY`.

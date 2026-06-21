@@ -25,7 +25,7 @@ There is no separate type-check script; `bun run build` is the authoritative typ
 Required env vars (see `.env.example`; secrets go in `.env`, which is gitignored):
 
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase
-- `GEMINI_API_KEY` — Google Gemini (descriptions + embeddings)
+- `AI_GATEWAY_API_KEY` — Vercel AI Gateway (routes all AI calls — descriptions + embeddings; Vercel deployments can also auth via OIDC)
 - `SHARE_TOKEN_SECRET` — HMAC secret for share tokens (**required in production**; falls back to a dev constant otherwise)
 - `NEXT_PUBLIC_SITE_URL` — canonical origin used for auth redirects and share URLs
 
@@ -56,7 +56,7 @@ There are three Supabase client factories — pick by context:
 - **Search** (`app/api/gallery/search/route.ts`): embed the query → call the Postgres RPC `match_embeddings` (cosine threshold 0.75, top 20, filtered by user) → join matched paths back to `gallery` → return 30-day signed URLs, preserving similarity order.
 - **Backfill** (`app/api/gallery/process-embeddings/route.ts`): finds gallery rows lacking embeddings and generates them.
 
-AI config lives entirely in `lib/ai.ts`: descriptions use `gemini-2.0-flash` (10–300 chars, structured via `generateObject`); embeddings use `gemini-embedding-001` at **1536 dimensions**, `SEMANTIC_SIMILARITY` task type. Changing the dimension requires a matching change to the `embeddings` table/index and the `match_embeddings` RPC.
+AI config lives entirely in `lib/ai.ts` and routes through the **Vercel AI Gateway** (`ai` v6's built-in `gateway`, authed via `AI_GATEWAY_API_KEY`): descriptions use `google/gemini-2.0-flash` (10–300 chars, structured via `generateObject`); embeddings use `openai/text-embedding-3-small` at **1536 dimensions** (set explicitly via `providerOptions.openai.dimensions`). Models are plain `provider/model` strings — no provider SDK. Changing the embedding dimension requires a matching change to the `embeddings` table/index and the `match_embeddings` RPC; switching the embedding model invalidates existing vectors (wipe + re-embed).
 
 ### Stateless share tokens
 
