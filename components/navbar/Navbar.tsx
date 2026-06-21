@@ -37,6 +37,7 @@ export default async function Navbar() {
                   src="/logo.png"
                   alt="Pixn Logo"
                   fill
+                  sizes="32px"
                   className="object-contain"
                   priority
                 />

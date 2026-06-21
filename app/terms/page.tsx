@@ -13,7 +13,7 @@ export default function TermsOfServicePage() {
 
                 <div className="flex items-center gap-3 mb-6">
                     <div className="relative w-12 h-12">
-                        <Image src="/logo.png" alt="Pixn" fill className="object-contain" />
+                        <Image src="/logo.png" alt="Pixn" fill sizes="48px" className="object-contain" />
                     </div>
                     <h1 className="text-4xl font-bold">Terms of Service</h1>
                 </div>

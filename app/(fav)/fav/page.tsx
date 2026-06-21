@@ -194,9 +194,10 @@ export default function FavoritesPage() {
                 </div>
               )}
               <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-                {images.map((img) => (
+                {images.map((img, index) => (
                   <div key={img.path} className="break-inside-avoid">
                     <GalleryImage
+                      priority={index < 4}
                       img={img}
                       onDownload={handleDownload}
                       onToggle={handleToggle}
@@ -256,6 +257,7 @@ export default function FavoritesPage() {
                 src={selectedImage.signedUrl as string}
                 alt={selectedImage.name}
                 fill
+                sizes="(max-width: 800px) 100vw, 800px"
                 className="object-contain"
               />
             )}
@@ -373,12 +375,14 @@ function GalleryImage({
   onToggle,
   onDelete,
   onClick,
+  priority,
 }: {
   img: GalleryImage;
   onDownload: (url: string, path: string) => void;
   onToggle: (path: string) => void;
   onDelete: (img: GalleryImage) => void;
   onClick: () => void;
+  priority: boolean;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -402,12 +406,14 @@ function GalleryImage({
         alt={img.name || "Gallery Image"}
         width={500}
         height={500}
+        priority={priority}
         className={cn(
           "w-full h-auto object-cover transition-transform duration-500 ease-in-out",
           isLoading ? "opacity-0" : "opacity-100",
           isHovered && "scale-105"
         )}
         onLoad={() => setIsLoading(false)}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
       />
 
       <div

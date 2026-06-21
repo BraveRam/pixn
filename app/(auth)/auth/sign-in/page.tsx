@@ -118,7 +118,7 @@ const LoginPage = () => {
       >
         <Link href="/" className="flex items-center gap-3 group">
           <div className="relative w-10 h-10 group-hover:scale-110 transition-transform">
-            <Image src="/logo.png" alt="Pixn" fill className="object-contain" />
+            <Image src="/logo.png" alt="Pixn" fill sizes="40px" className="object-contain" />
           </div>
           <span className="text-2xl font-bold">Pixn</span>
         </Link>
@@ -240,6 +240,7 @@ const LoginPage = () => {
                 src="/logo.png"
                 alt="Pixn"
                 fill
+                sizes="40px"
                 className="object-contain"
               />
             </div>
