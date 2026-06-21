@@ -42,3 +42,8 @@ next-env.d.ts
 
 .vercel
 .npmrc
+
+# supabase (CLI local cache: project-ref, pooler-url, linked-project.json, etc.)
+supabase/.temp/
+supabase/.branches/
+supabase/.env

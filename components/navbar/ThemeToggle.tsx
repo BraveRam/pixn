@@ -10,6 +10,8 @@ export function ThemeToggle() {
     const [mounted, setMounted] = React.useState(false);
 
     React.useEffect(() => {
+        // Standard next-themes hydration mount guard; this setState is intentional.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 

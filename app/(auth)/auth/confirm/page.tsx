@@ -18,6 +18,8 @@ export default function ConfirmPage() {
 
     if (!token_hash || !type) {
       toast.error("Missing token or type in URL. Please try again.");
+      // Early-exit error path; turning the spinner off here is intentional.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       return;
     }

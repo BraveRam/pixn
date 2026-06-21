@@ -16,6 +16,8 @@ export function SearchInput({ onSearch, placeholder = "Search images...", classN
     const [query, setQuery] = useState(currentQuery);
 
     useEffect(() => {
+        // Re-sync the controlled value when the parent-provided query changes.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setQuery(currentQuery);
     }, [currentQuery]);
 
