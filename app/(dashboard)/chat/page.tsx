@@ -35,17 +35,27 @@ import {
 } from "@/components/ai-elements/reasoning";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { ChatImageResults } from "./ChatImageResults";
+import { useChatStore } from "@/lib/store/chat";
 import type { ImageSearchToolOutput } from "@/lib/chat/types";
 
 // History is kept in memory only; cap it so a single chat can't grow unbounded.
 const MAX_MESSAGES = 30;
 
 export default function ChatPage() {
-  const { messages, sendMessage, setMessages, status, stop } = useChat();
+  // Hydrate from the in-memory store so the conversation survives in-app
+  // navigation (the page unmounts on route change).
+  const { messages, sendMessage, setMessages, status, stop } = useChat({
+    messages: useChatStore.getState().messages,
+  });
 
   const atLimit = messages.length >= MAX_MESSAGES;
   const isBusy = status === "submitted" || status === "streaming";
   const hasMessages = messages.length > 0;
+
+  // Persist the live conversation back into the store on every change.
+  useEffect(() => {
+    useChatStore.setState({ messages });
+  }, [messages]);
 
   // Warn before leaving/reloading with an in-memory (unsaved) conversation.
   useEffect(() => {
@@ -69,6 +79,7 @@ export default function ChatPage() {
   const handleReset = () => {
     stop();
     setMessages([]);
+    useChatStore.getState().clearMessages();
   };
 
   return (
