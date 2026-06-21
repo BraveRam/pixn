@@ -31,7 +31,10 @@ export async function POST(request: Request) {
       "match_embeddings",
       {
         query_embedding: embedding,
-        match_threshold: 0.75,
+        // Tuned for openai/text-embedding-3-small: relevant matches score
+        // ~0.3-0.5 cosine — much lower than Gemini's SEMANTIC_SIMILARITY range,
+        // so the old 0.75 cutoff filtered out every result. Lower if too strict.
+        match_threshold: 0.3,
         match_count: 20,
         filter_user_id: user.id,
       }
