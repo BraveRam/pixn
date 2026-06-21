@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Download,
@@ -63,6 +63,16 @@ export default function GalleryPage() {
   const queryClient = useQueryClient();
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Seed the semantic search from `?q=` (used by the chat "Open in Gallery" link).
+  // Done in an effect (not a lazy initializer) to keep SSR/client render in sync.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSearchQuery(q);
+    }
+  }, []);
 
   const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: searchQuery

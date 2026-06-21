@@ -10,6 +10,7 @@ export function NavLinks() {
 
     const links = [
         { href: "/gallery", label: "Gallery" },
+        { href: "/chat", label: "Chat" },
         { href: "/fav", label: "Favorites" },
     ];
 

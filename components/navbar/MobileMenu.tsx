@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { AlignJustify, BookHeart, Images, LogOut, X } from "lucide-react";
+import {
+  AlignJustify,
+  BookHeart,
+  Images,
+  LogOut,
+  MessageSquare,
+  X,
+} from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -64,6 +71,19 @@ const MobileMenu = ({ user }: Props) => {
             <FastLink href="/gallery" onClick={() => setOpen(false)}>
               <Images className="w-4 h-4" />
               Gallery
+            </FastLink>
+          </Button>
+          <Button
+            asChild
+            variant="ghost"
+            className={cn(
+              "w-full justify-start gap-2",
+              pathname === "/chat" && "bg-secondary font-medium"
+            )}
+          >
+            <FastLink href="/chat" onClick={() => setOpen(false)}>
+              <MessageSquare className="w-4 h-4" />
+              Chat
             </FastLink>
           </Button>
           <Button

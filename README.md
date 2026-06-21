@@ -7,12 +7,13 @@ Your images, perfectly organized. **Pixn** is an AI-powered image gallery and se
 
 ## 🚀 Overview
 
-Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini model, Pixn automatically generates detailed descriptions for every image you upload. This enables **semantic search**, allowing you to find photos using natural language (e.g., "show me photos of sunset at the beach") instead of just filenames or tags.
+Pixn isn't just an image uploader; it's a smart gallery. Pixn automatically generates detailed descriptions for every image you upload. This enables **semantic search**, allowing you to find photos using natural language (e.g., "show me photos of sunset at the beach") instead of just filenames or tags. You can also **chat with your gallery** — a streaming AI assistant that searches your photos for you and shows the matches inline.
 
 ## ✨ Key Features
 
 - **AI-Powered Tagging**: Automatically generates rich descriptions for uploaded images.
 - **Semantic Search**: Find images using natural language queries powered by vector embeddings.
+- **Chat with Your Gallery**: A streaming chat assistant that calls a search tool to find your photos, streams its reasoning, and renders results inline. History is kept in memory only and capped at 30 messages per chat.
 - **Modern UI/UX**: Sleek, dark-themed interface built with Tailwind CSS 4 and Framer Motion.
 - **Secure Authentication**: Built-in user accounts and data protection via Supabase.
 - **Optimized Uploads**: Fast, multi-file uploads with a dedicated dashboard.
@@ -20,10 +21,10 @@ Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini m
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Backend / Database**: [Supabase](https://supabase.com/) (PostgreSQL + Vector)
-- **AI Integration**: [AI SDK](https://sdk.vercel.ai/) routed through the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) (Google Gemini for descriptions, OpenAI for embeddings)
+- **AI Integration**: [AI SDK](https://sdk.vercel.ai/) routed through the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) — image descriptions, vector embeddings, and chat, with models configurable via the gateway
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 - **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
 - **Icons**: [Lucide React](https://lucide.dev/)
@@ -35,7 +36,7 @@ Pixn isn't just an image uploader; it's a smart gallery. Using Google's Gemini m
 
 - [Bun](https://bun.sh/) (recommended) or Node.js
 - Supabase project with Vector extension enabled
-- Gemini API Key
+- A [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) API key
 
 ### Installation
 
