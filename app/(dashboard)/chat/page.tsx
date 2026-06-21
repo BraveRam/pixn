@@ -48,6 +48,10 @@ export default function ChatPage() {
     messages: useChatStore.getState().messages,
   });
 
+  // Draft text is controlled off the store so it survives navigation too.
+  const draft = useChatStore((state) => state.draft);
+  const setDraft = useChatStore((state) => state.setDraft);
+
   const atLimit = messages.length >= MAX_MESSAGES;
   const isBusy = status === "submitted" || status === "streaming";
   const hasMessages = messages.length > 0;
@@ -74,6 +78,7 @@ export default function ChatPage() {
     const text = message.text.trim();
     if (!text) return;
     sendMessage({ text });
+    setDraft("");
   };
 
   const handleReset = () => {
@@ -205,6 +210,8 @@ export default function ChatPage() {
 
         <PromptInput onSubmit={handleSubmit} className="rounded-xl">
           <PromptInputTextarea
+            value={draft}
+            onChange={(event) => setDraft(event.currentTarget.value)}
             disabled={atLimit}
             placeholder={
               atLimit
