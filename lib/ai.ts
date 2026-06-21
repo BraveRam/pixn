@@ -2,7 +2,7 @@ import { generateObject, embedMany, gateway } from "ai";
 import z from "zod";
 
 const descriptionSchema = z.object({
-  description: z.string().min(10).max(300),
+  description: z.string().min(10).max(600),
 });
 
 export const generateImageDescription = async (
@@ -10,14 +10,11 @@ export const generateImageDescription = async (
 ): Promise<string> => {
   try {
     const { object } = await generateObject({
-      model: gateway("google/gemini-2.0-flash"),
+      model: gateway("google/gemini-2.5-flash-lite"),
       schema: descriptionSchema,
+      system:
+        "You are a professional image description writer. Write a concise description of the given image, between 10 and 500 characters.",
       messages: [
-        {
-          role: "system",
-          content:
-            "You are a description writer professional from the image given - the length of the description should be between 10 and 300 characters",
-        },
         {
           role: "user",
           content: [

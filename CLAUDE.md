@@ -56,7 +56,7 @@ There are three Supabase client factories — pick by context:
 - **Search** (`app/api/gallery/search/route.ts`): embed the query → call the Postgres RPC `match_embeddings` (cosine threshold 0.75, top 20, filtered by user) → join matched paths back to `gallery` → return 30-day signed URLs, preserving similarity order.
 - **Backfill** (`app/api/gallery/process-embeddings/route.ts`): finds gallery rows lacking embeddings and generates them.
 
-AI config lives entirely in `lib/ai.ts` and routes through the **Vercel AI Gateway** (`ai` v6's built-in `gateway`, authed via `AI_GATEWAY_API_KEY`): descriptions use `google/gemini-2.0-flash` (10–300 chars, structured via `generateObject`); embeddings use `openai/text-embedding-3-small` at **1536 dimensions** (set explicitly via `providerOptions.openai.dimensions`). Models are plain `provider/model` strings — no provider SDK. Changing the embedding dimension requires a matching change to the `embeddings` table/index and the `match_embeddings` RPC; switching the embedding model invalidates existing vectors (wipe + re-embed).
+AI config lives entirely in `lib/ai.ts` and routes through the **Vercel AI Gateway** (`ai` v6's built-in `gateway`, authed via `AI_GATEWAY_API_KEY`): descriptions use `google/gemini-2.5-flash-lite` (10–300 chars, structured via `generateObject`); embeddings use `openai/text-embedding-3-small` at **1536 dimensions** (set explicitly via `providerOptions.openai.dimensions`). Models are plain `provider/model` strings — no provider SDK. Changing the embedding dimension requires a matching change to the `embeddings` table/index and the `match_embeddings` RPC; switching the embedding model invalidates existing vectors (wipe + re-embed).
 
 ### Stateless share tokens
 
