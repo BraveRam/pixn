@@ -41,14 +41,15 @@ export default function LandingPage() {
             <span>Pixn</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/auth/sign-in">
-              <Button
-                size="sm"
-                className="bg-white text-black hover:bg-zinc-200 rounded-full px-6 font-medium"
-              >
+            <Button
+              asChild
+              size="sm"
+              className="bg-white text-black hover:bg-zinc-200 rounded-full px-6 font-medium"
+            >
+              <Link href="/auth/sign-in">
                 Get Started
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </nav>
@@ -86,24 +87,26 @@ export default function LandingPage() {
               variants={fadeIn}
               className="flex flex-col sm:flex-row items-center gap-4"
             >
-              <Link href="/auth/sign-in">
-                <Button
-                  size="lg"
-                  className="h-12 px-8 rounded-full bg-red-600 hover:bg-red-500 text-white font-medium text-lg shadow-[0_0_40px_-10px_rgba(220,38,38,0.5)] hover:shadow-[0_0_60px_-15px_rgba(220,38,38,0.6)] transition-all duration-300"
-                >
+              <Button
+                asChild
+                size="lg"
+                className="h-12 px-8 rounded-full bg-red-600 hover:bg-red-500 text-white font-medium text-lg shadow-[0_0_40px_-10px_rgba(220,38,38,0.5)] hover:shadow-[0_0_60px_-15px_rgba(220,38,38,0.6)] transition-all duration-300"
+              >
+                <Link href="/auth/sign-in">
                   Get Started Free
                   <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <Link href="#features">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 px-8 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white font-medium text-lg backdrop-blur-sm"
-                >
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-12 px-8 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white font-medium text-lg backdrop-blur-sm"
+              >
+                <Link href="#features">
                   Learn More
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </motion.div>
 
             <motion.div
@@ -264,14 +267,15 @@ export default function LandingPage() {
                 Join creators who trust Pixn to showcase their best work. No
                 credit card required.
               </p>
-              <Link href="/auth/sign-in">
-                <Button
-                  size="lg"
-                  className="h-14 px-10 rounded-full bg-white text-black hover:bg-zinc-200 font-bold text-lg"
-                >
+              <Button
+                asChild
+                size="lg"
+                className="h-14 px-10 rounded-full bg-white text-black hover:bg-zinc-200 font-bold text-lg"
+              >
+                <Link href="/auth/sign-in">
                   Create Free Account
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

@@ -26,9 +26,9 @@ export default async function SharedPage({
           <p className="text-muted-foreground">
             Ask the owner to generate a new link.
           </p>
-          <Link href="/">
-            <Button>Go to Pixn</Button>
-          </Link>
+          <Button asChild>
+            <Link href="/">Go to Pixn</Link>
+          </Button>
         </div>
       </main>
     );

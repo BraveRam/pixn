@@ -563,14 +563,15 @@ export default function GalleryPage() {
                   Show all images
                 </Button>
               ) : (
-                <Link href="/upload" prefetch>
-                  <Button
-                    size="lg"
-                    className="rounded-full font-semibold cursor-pointer"
-                  >
+                <Button
+                  asChild
+                  size="lg"
+                  className="rounded-full font-semibold cursor-pointer"
+                >
+                  <Link href="/upload" prefetch>
                     Publish your first Image
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
             </div>
           )}

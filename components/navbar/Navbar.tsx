@@ -53,12 +53,15 @@ export default async function Navbar() {
               <div className="flex items-center gap-3">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <FastLink href="/upload">
-                      <Button className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all cursor-pointer">
+                    <Button
+                      asChild
+                      className="rounded-full gap-2 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                    >
+                      <FastLink href="/upload">
                         <Plus className="w-4 h-4" />
                         Publish
-                      </Button>
-                    </FastLink>
+                      </FastLink>
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Upload new images</p>
@@ -90,26 +93,25 @@ export default async function Navbar() {
                     </Tooltip>
                   </div>
                 ) : (
-                  <Link href="/auth/sign-in">
-                    <Button variant="default" className="rounded-full cursor-pointer">
-                      Sign In
-                    </Button>
-                  </Link>
+                  <Button asChild variant="default" className="rounded-full cursor-pointer">
+                    <Link href="/auth/sign-in">Sign In</Link>
+                  </Button>
                 )}
               </div>
             </div>
 
             <div className="flex items-center gap-2 md:hidden">
-              <FastLink href="/upload">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="rounded-full"
-                  aria-label="Upload image"
-                >
+              <Button
+                asChild
+                size="icon"
+                variant="ghost"
+                className="rounded-full"
+                aria-label="Upload image"
+              >
+                <FastLink href="/upload">
                   <Plus className="w-5 h-5" />
-                </Button>
-              </FastLink>
+                </FastLink>
+              </Button>
               <ThemeToggle />
               <MobileMenu user={user} />
             </div>

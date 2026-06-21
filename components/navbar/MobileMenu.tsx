@@ -53,30 +53,32 @@ const MobileMenu = ({ user }: Props) => {
             </p>
           </div>
 
-          <FastLink href="/gallery" onClick={() => setOpen(false)}>
-            <Button
-              variant="ghost"
-              className={cn(
-                "w-full justify-start gap-2",
-                pathname === "/gallery" && "bg-secondary font-medium"
-              )}
-            >
+          <Button
+            asChild
+            variant="ghost"
+            className={cn(
+              "w-full justify-start gap-2",
+              pathname === "/gallery" && "bg-secondary font-medium"
+            )}
+          >
+            <FastLink href="/gallery" onClick={() => setOpen(false)}>
               <Images className="w-4 h-4" />
               Gallery
-            </Button>
-          </FastLink>
-          <FastLink href="/fav" onClick={() => setOpen(false)}>
-            <Button
-              variant="ghost"
-              className={cn(
-                "w-full justify-start gap-2",
-                pathname === "/fav" && "bg-secondary font-medium"
-              )}
-            >
+            </FastLink>
+          </Button>
+          <Button
+            asChild
+            variant="ghost"
+            className={cn(
+              "w-full justify-start gap-2",
+              pathname === "/fav" && "bg-secondary font-medium"
+            )}
+          >
+            <FastLink href="/fav" onClick={() => setOpen(false)}>
               <BookHeart className="w-4 h-4" />
               Favorites
-            </Button>
-          </FastLink>
+            </FastLink>
+          </Button>
 
           <div className="h-px bg-border my-2" />
 

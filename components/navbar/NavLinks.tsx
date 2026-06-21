@@ -18,18 +18,18 @@ export function NavLinks() {
             {links.map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                    <FastLink key={link.href} href={link.href}>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className={cn(
-                                "rounded-full px-4 hover:bg-background cursor-pointer transition-all duration-200",
-                                isActive && "bg-background text-foreground shadow-sm font-medium"
-                            )}
-                        >
-                            {link.label}
-                        </Button>
-                    </FastLink>
+                    <Button
+                        key={link.href}
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                            "rounded-full px-4 hover:bg-background cursor-pointer transition-all duration-200",
+                            isActive && "bg-background text-foreground shadow-sm font-medium"
+                        )}
+                    >
+                        <FastLink href={link.href}>{link.label}</FastLink>
+                    </Button>
                 );
             })}
         </div>

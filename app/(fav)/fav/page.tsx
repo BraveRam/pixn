@@ -232,14 +232,15 @@ export default function FavoritesPage() {
                   Show all favorites
                 </Button>
               ) : (
-                <Link href="/gallery" prefetch>
-                  <Button
-                    size="lg"
-                    className="rounded-full font-semibold cursor-pointer"
-                  >
+                <Button
+                  asChild
+                  size="lg"
+                  className="rounded-full font-semibold cursor-pointer"
+                >
+                  <Link href="/gallery" prefetch>
                     Browse Gallery
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
             </div>
           )}
